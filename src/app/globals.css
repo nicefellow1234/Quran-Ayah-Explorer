@@ -277,6 +277,7 @@ button.ayah-number-marker:hover { color: var(--accent); transform: scale(1.08); 
 .ayah-number-ornament::before { top: -.115em; }
 .ayah-number-ornament::after { bottom: -.115em; }
 .ayah-number-digits { position: relative; z-index: 1; display: grid; place-items: center; font-family: Arial, Helvetica, sans-serif; font-size: .38em; font-weight: 700; line-height: 1; transform: translateY(.02em); }
+.reading-mode .ayah-number-digits { font-size: .5em; font-weight: 800; }
 .arabic-word { border-radius: .28em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: color .16s ease, background-color .16s ease, box-shadow .16s ease; }
 .arabic-word.is-reciting { color: #00a99d; background: transparent; box-shadow: none; text-shadow: 0 0 12px rgba(0, 169, 157, .28); }
 .translations-list { display: grid; width: 100%; gap: 18px; }
