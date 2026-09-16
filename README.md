@@ -11,6 +11,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Complete directory of all 114 Surahs with searchable filtering.
 - Quran.com-style Surah name icons in the directory, selector, and reader header.
 - Searchable Surah and ayah picker with keyboard support, Surah icon previews, +/- controls, and a range slider.
+- Header Quran navigator with `Ctrl K` access, reference validation, and shortcuts to popular Surahs and ayahs.
 - Stable deep links for individual ayahs, for example `/ayah/2:255`.
 - Full Surah reader at `/surah/[chapterId]` with lazy loading as the reader approaches the end of the loaded content.
 - Reader mode toggle with an Arabic-first layout, Surah identity card, Listen/Info controls, Arabic/Translation tabs, and timed word highlighting; it opens on Arabic without showing translations or tafsir controls.

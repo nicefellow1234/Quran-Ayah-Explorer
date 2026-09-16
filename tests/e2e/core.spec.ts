@@ -34,6 +34,15 @@ test("theme switcher defaults to System and persists an explicit theme", async (
   await expect(root).toHaveAttribute("data-theme", "dark");
 });
 
+test("header Quran navigator opens with the keyboard and routes references", async ({ page }) => {
+  await page.goto("/");
+  await page.keyboard.press("Control+K");
+  await expect(page.getByRole("dialog", { name: "Go anywhere in the Quran" })).toBeVisible();
+  await page.getByRole("textbox", { name: "Jump to a Surah or ayah" }).fill("2:10");
+  await page.getByRole("button", { name: "Open Quran reference" }).click();
+  await expect(page).toHaveURL(/\/ayah\/2:10$/);
+});
+
 test("invalid Surah routes show a not-found state", async ({ page }) => {
   test.setTimeout(30_000);
   await page.goto("/surah/500");
