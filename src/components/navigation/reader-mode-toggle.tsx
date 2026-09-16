@@ -22,13 +22,18 @@ export function ReaderModeToggle() {
 
   return (
     <div className="reader-mode-toggle" aria-label="Reading mode">
-      <button type="button" className={!readingMode ? "is-active" : ""} onClick={() => setMode("verse")} aria-pressed={!readingMode} aria-label="Verse by verse mode">
-        <List size={14} aria-hidden="true" />
-        <span>Verse by Verse</span>
-      </button>
-      <button type="button" className={readingMode ? "is-active" : ""} onClick={() => setMode("reading")} aria-pressed={readingMode} aria-label="Reading">
-        <BookOpenText size={14} aria-hidden="true" />
-        <span>Reading</span>
+      <div className="reader-mode-toggle-desktop">
+        <button type="button" className={!readingMode ? "is-active" : ""} onClick={() => setMode("verse")} aria-pressed={!readingMode} aria-label="Verse by verse mode">
+          <List size={14} aria-hidden="true" />
+          <span>Verse by Verse</span>
+        </button>
+        <button type="button" className={readingMode ? "is-active" : ""} onClick={() => setMode("reading")} aria-pressed={readingMode} aria-label="Reading">
+          <BookOpenText size={14} aria-hidden="true" />
+          <span>Reading</span>
+        </button>
+      </div>
+      <button type="button" className="reader-mode-toggle-mobile" onClick={() => setMode(readingMode ? "verse" : "reading")} aria-pressed={readingMode} aria-label={readingMode ? "Switch to verse by verse mode" : "Switch to Reading mode"} title={readingMode ? "Switch to verse by verse mode" : "Switch to Reading mode"}>
+        {readingMode ? <BookOpenText size={14} aria-hidden="true" /> : <List size={14} aria-hidden="true" />}
       </button>
     </div>
   );

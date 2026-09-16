@@ -49,25 +49,38 @@ export function ThemeSwitcher() {
     return () => colorScheme.removeEventListener("change", syncTheme);
   }, [preference, ready]);
 
+  function cyclePreference() {
+    const currentIndex = THEME_OPTIONS.findIndex((option) => option.value === preference);
+    setPreference(THEME_OPTIONS[(currentIndex + 1) % THEME_OPTIONS.length].value);
+  }
+
+  const activeTheme = THEME_OPTIONS.find((option) => option.value === preference) ?? THEME_OPTIONS[0];
+  const ActiveIcon = activeTheme.Icon;
+
   return (
-    <div className="theme-switcher" role="radiogroup" aria-label="Color theme" data-preference={preference}>
-      <span className="theme-switcher-thumb" aria-hidden="true" />
-      {THEME_OPTIONS.map(({ value, label, Icon }) => (
-        <label className="theme-switcher-option" title={`${label} theme`} key={value}>
-          <input
-            type="radio"
-            name={groupName}
-            value={value}
-            aria-label={label}
-            checked={preference === value}
-            onChange={() => setPreference(value)}
-          />
-          <span className="theme-switcher-option-content">
-            <Icon size={15} aria-hidden="true" />
-            <span className="theme-switcher-label">{label}</span>
-          </span>
-        </label>
-      ))}
+    <div className="theme-switcher" data-preference={preference}>
+      <div className="theme-switcher-desktop" role="radiogroup" aria-label="Color theme">
+        <span className="theme-switcher-thumb" aria-hidden="true" />
+        {THEME_OPTIONS.map(({ value, label, Icon }) => (
+          <label className="theme-switcher-option" title={`${label} theme`} key={value}>
+            <input
+              type="radio"
+              name={groupName}
+              value={value}
+              aria-label={label}
+              checked={preference === value}
+              onChange={() => setPreference(value)}
+            />
+            <span className="theme-switcher-option-content">
+              <Icon size={15} aria-hidden="true" />
+              <span className="theme-switcher-label">{label}</span>
+            </span>
+          </label>
+        ))}
+      </div>
+      <button type="button" className="theme-switcher-mobile" onClick={cyclePreference} aria-label={`Color theme: ${activeTheme.label}. Switch theme`} title={`Color theme: ${activeTheme.label}. Click to switch`}>
+        <ActiveIcon size={15} aria-hidden="true" />
+      </button>
     </div>
   );
 }
