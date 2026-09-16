@@ -17,6 +17,9 @@ export type VerseViewModel = {
   translations: VerseTranslation[];
 };
 
+/** [first word offset, exclusive last word offset, start time in ms, end time in ms] */
+export type AudioSegment = [number, number, number, number];
+
 export type VerseTranslation = {
   id: number;
   text: string;

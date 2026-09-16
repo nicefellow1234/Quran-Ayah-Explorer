@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Check, Copy, Link as LinkIcon, MessageCircle, Play } from "lucide-react";
 
 import type { ResourceOption, VerseViewModel } from "@/lib/quran/types";
+import { getActiveAudioWordRange } from "@/lib/quran/audio-segments";
 import { sanitizeTranslationMarkup } from "@/lib/quran/translation-markup";
 
 import { useAudioPlayer } from "../audio/audio-player";
@@ -23,6 +24,10 @@ export function VerseCard({
   const audio = useAudioPlayer();
   const [tafsirOpen, setTafsirOpen] = useState(false);
   const [copied, setCopied] = useState(false);
+  const arabicWords = verse.arabic.trim().split(/\s+/).filter(Boolean);
+  const activeWordRange = audio.currentVerse === verse.verseKey
+    ? getActiveAudioWordRange(audio.audioSegments, audio.currentTime)
+    : null;
 
   async function copyVerse() {
     const translations = verse.translations.map((translation) => `${translation.resourceName}:\n${translation.text}`);
@@ -70,7 +75,12 @@ export function VerseCard({
           </button>
         </div>
       </div>
-      <p className="arabic-text" lang="ar" dir="rtl" translate="no">{verse.arabic}</p>
+      <p className="arabic-text" lang="ar" dir="rtl" translate="no">
+        {arabicWords.map((word, index) => {
+          const isActive = Boolean(activeWordRange && index >= activeWordRange.from && index < activeWordRange.to);
+          return <span className={`arabic-word${isActive ? " is-reciting" : ""}`} data-word-index={index} key={`${verse.verseKey}-${index}`}>{index ? " " : null}{word}</span>;
+        })}
+      </p>
       {verse.translations.length ? (
         <div className="translations-list">
           {verse.translations.map((translation) => {

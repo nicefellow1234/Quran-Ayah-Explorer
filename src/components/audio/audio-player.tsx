@@ -3,7 +3,7 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
 import { Pause, Play, SkipBack, SkipForward, Volume2 } from "lucide-react";
 
-import type { ResourceOption } from "@/lib/quran/types";
+import type { AudioSegment, ResourceOption } from "@/lib/quran/types";
 
 type PlayerStatus = "idle" | "loading" | "playing" | "paused" | "error";
 type AudioPlayerContextValue = {
@@ -13,6 +13,7 @@ type AudioPlayerContextValue = {
   reciterId?: number;
   currentTime: number;
   duration: number;
+  audioSegments: AudioSegment[];
   autoPlayAll: boolean;
   setQueue: (queue: string[]) => void;
   setAutoPlayAll: (enabled: boolean) => void;
@@ -40,6 +41,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
   const [reciterId, setReciterId] = useState<number>();
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
+  const [audioSegments, setAudioSegments] = useState<AudioSegment[]>([]);
   const [autoPlayAll, setAutoPlayAllState] = useState(false);
 
   useEffect(() => { queueRef.current = queue; }, [queue]);
@@ -104,12 +106,14 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     setReciterId(chosenReciter);
     setCurrentTime(0);
     setDuration(0);
+    setAudioSegments([]);
     try {
       const response = await fetch(`/api/audio?verseKey=${encodeURIComponent(verseKey)}&recitationId=${chosenReciter}`, { signal: controller.signal });
       if (!response.ok) throw new Error("Audio request failed");
-      const data = await response.json() as { audioUrl: string };
+      const data = await response.json() as { audioUrl: string; segments?: AudioSegment[] };
       if (requestId !== requestIdRef.current) return;
       audio.src = data.audioUrl;
+      setAudioSegments(data.segments ?? []);
       await audio.play();
       if (requestId !== requestIdRef.current) return;
       setStatus("playing");
@@ -166,6 +170,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     reciterId,
     currentTime,
     duration,
+    audioSegments,
     autoPlayAll,
     setQueue,
     setAutoPlayAll,
@@ -175,7 +180,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     seek,
     next: () => move(1),
     previous: () => move(-1),
-  }), [currentVerse, status, queue, reciterId, currentTime, duration, autoPlayAll, setQueue, setAutoPlayAll, playVerse, changeReciter, toggle, seek, move]);
+  }), [currentVerse, status, queue, reciterId, currentTime, duration, audioSegments, autoPlayAll, setQueue, setAutoPlayAll, playVerse, changeReciter, toggle, seek, move]);
 
   return <AudioPlayerContext.Provider value={value}>{children}</AudioPlayerContext.Provider>;
 }

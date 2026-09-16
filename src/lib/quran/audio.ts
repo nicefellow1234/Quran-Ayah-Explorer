@@ -2,6 +2,7 @@ import type { ChapterId, VerseKey } from "@quranjs/api";
 
 import { getQuranClient, isQuranConfigured, logQuranError } from "./client";
 import { QuranApiError } from "./errors";
+import type { AudioSegment } from "./types";
 import { parseChapterId, parseVerseKey } from "./validation";
 
 export async function getVerseAudio(verseKey: string, recitationId: number) {
@@ -14,12 +15,13 @@ export async function getVerseAudio(verseKey: string, recitationId: number) {
     const response = await getQuranClient().content.v4.audio.verseRecitation.byKey(
       `${chapter}:${verse}` as VerseKey,
       String(recitationId),
+      { fields: { segments: true } },
     );
     const audio = response.audioFiles[0];
     if (!audio?.audioUrl) {
       throw new QuranApiError("Audio is unavailable for this recitation.", "audio", 404);
     }
-    return { verseKey: `${chapter}:${verse}`, audioUrl: audio.audioUrl };
+    return { verseKey: `${chapter}:${verse}`, audioUrl: audio.audioUrl, segments: (audio.segments ?? []) as AudioSegment[] };
   } catch (error) {
     logQuranError(`audio.verse:${chapter}:${verse}`, error);
     if (error instanceof QuranApiError) throw error;
