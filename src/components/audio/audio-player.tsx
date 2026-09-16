@@ -1,11 +1,12 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type CSSProperties } from "react";
-import { Pause, Play, SkipBack, SkipForward, Volume2 } from "lucide-react";
+import { ChevronUp, EyeOff, Pause, Play, SkipBack, SkipForward, Volume2 } from "lucide-react";
 
 import type { AudioSegment, ResourceOption } from "@/lib/quran/types";
 
 type PlayerStatus = "idle" | "loading" | "playing" | "paused" | "error";
+const AUDIO_DOCK_HIDDEN_KEY = "ayah-explorer.audio-dock-hidden";
 type AudioPlayerContextValue = {
   currentVerse: string | null;
   status: PlayerStatus;
@@ -215,6 +216,7 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
   const activeReciterId = player.reciterId;
   const changeReciter = player.changeReciter;
   const hasInitializedReciter = useRef(false);
+  const [isHidden, setIsHidden] = useState(false);
   const [selectedReciter, setSelectedReciter] = useState(defaultReciterId);
   const [availability, setAvailability] = useState<{
     key: string;
@@ -223,6 +225,13 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
   } | null>(null);
   const recitationIds = useMemo(() => reciters.map((reciter) => reciter.id).join(","), [reciters]);
   const availabilityKey = player.currentVerse ? `${player.currentVerse}|${recitationIds}` : "";
+
+  useEffect(() => {
+    const timer = window.setTimeout(() => {
+      if (window.localStorage.getItem(AUDIO_DOCK_HIDDEN_KEY) === "true") setIsHidden(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     if (hasInitializedReciter.current) return;
@@ -297,8 +306,23 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
     ? selectedReciter
     : availableReciters[0]?.id ?? "";
 
+  function setDockVisibility(hidden: boolean) {
+    setIsHidden(hidden);
+    window.localStorage.setItem(AUDIO_DOCK_HIDDEN_KEY, String(hidden));
+  }
+
+  if (isHidden) {
+    return (
+      <button type="button" className="audio-dock-reveal" onClick={() => setDockVisibility(false)} aria-label="Show audio player">
+        <Volume2 size={15} aria-hidden="true" />
+        <span>Show audio</span>
+        <ChevronUp size={14} aria-hidden="true" />
+      </button>
+    );
+  }
+
   return (
-    <aside className="audio-dock" aria-label="Audio player" aria-busy={player.status === "loading"}>
+    <aside className="audio-dock" id="audio-dock" aria-label="Audio player" aria-busy={player.status === "loading"}>
       <div className="audio-dock-info">
         <span className="audio-icon-badge"><Volume2 size={16} aria-hidden="true" /></span>
         <span><strong>{player.currentVerse}</strong><small>{player.status === "loading" ? "Preparing recitation…" : player.status === "error" ? "Audio unavailable" : "Ayah recitation"}</small></span>
@@ -340,6 +364,9 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
         <span className="audio-autoplay-switch" aria-hidden="true" />
         <span className="audio-autoplay-copy"><strong>Auto-play all</strong><small>Continuous tilawat</small></span>
       </label>
+      <button type="button" className="audio-hide-button" onClick={() => setDockVisibility(true)} aria-label="Hide audio player" title="Hide audio player">
+        <EyeOff size={15} aria-hidden="true" />
+      </button>
     </aside>
   );
 }
