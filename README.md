@@ -27,6 +27,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Word-level Arabic highlighting follows the active reciter’s timed audio segments during playback, with theme-aware contrast in light and dark modes.
 - The reciter selector checks the active ayah and only lists Qaris with available audio; changing Qari stops the current audio and restarts that ayah from the beginning.
 - Optional “Auto-play all” mode, disabled by default, that advances through the current Surah and smoothly scrolls the playing ayah into view.
+- Continuous tilawat is surfaced in the home hero, Reading-mode Info panel, Listen control, and audio dock so users can discover it before or during playback.
 - Responsive design, reduced-motion support, keyboard-accessible controls, loading states, and user-safe error states.
 - Privacy policy and terms pages at `/privacy` and `/terms` for deployment configuration.
 
@@ -41,6 +42,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Ayah stepper with previous/next buttons and a draggable range slider from ayah 1 to the selected Surah’s final ayah.
 - Live selected-destination preview showing the Surah icon, name, translation, revelation place, and `chapter:ayah` reference.
 - One-click actions to open the selected ayah or read the complete Surah.
+- Home hero guidance explains that users can play an ayah and then enable Auto-play all for continuous tilawat.
 - Complete 114-Surah directory with name/number filtering, translated name, ayah count, revelation place, and chapter links.
 - Compact header jump form for direct Surah or ayah navigation, including references such as `2:255`.
 - Previous/next ayah navigation on individual ayah pages.
@@ -112,6 +114,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Changing the Qari immediately reloads and plays the current ayah with the newly selected reciter.
 - Seek bar with current time, total duration, disabled state while duration is unavailable, and progress styling.
 - “Auto-play all” switch is off by default and continues through the current Surah when enabled.
+- The audio dock labels this as “Continuous tilawat” and explains that it plays every ayah in the Surah.
 - Auto-play follows the complete Surah queue, including ayahs not yet rendered on screen.
 - User-selected reciter and translation preferences persist in local storage.
 

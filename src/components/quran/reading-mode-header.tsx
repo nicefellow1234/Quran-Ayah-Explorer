@@ -113,7 +113,7 @@ export function ReadingModeHeader({
       <p className="reading-mode-description">Read and listen to {name} with translation, tafsir, audio recitation, word-by-word meaning, and transliteration.</p>
       <div className="reading-mode-actions">
         <div className="reading-mode-utility">
-          <button type="button" className="reading-mode-action" onClick={listen}>
+          <button type="button" className="reading-mode-action" onClick={listen} title="Play this Surah; enable Auto-play all in the audio dock for continuous tilawat">
             {isPlayingCurrentChapter ? <Pause size={12} fill="currentColor" aria-hidden="true" /> : <Play size={12} fill="currentColor" aria-hidden="true" />}
             <span>{isPlayingCurrentChapter ? "Pause" : "Listen"}</span>
           </button>
@@ -166,7 +166,7 @@ export function ReadingModeHeader({
           )}
         </div>
       </div>
-      {showInfo ? <div className="reading-mode-info"><strong>{chapter.revelationPlace}</strong><span>{chapter.versesCount} ayahs · word highlighting follows the recitation timing.</span></div> : null}
+      {showInfo ? <div className="reading-mode-info"><strong>{chapter.revelationPlace}</strong><span>{chapter.versesCount} ayahs · word highlighting follows the recitation timing.</span><span className="reading-mode-info-tip">Enable Auto-play all in the audio dock to continue through every ayah. It starts off by default.</span></div> : null}
     </section>
   );
 }

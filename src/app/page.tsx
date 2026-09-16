@@ -26,8 +26,10 @@ export default async function Home() {
             {isQuranConfigured && chapters.length > 0 ? <div className="hero-highlights" aria-label="Quran features">
               <span><strong>{chapters.length}</strong><small>Surahs</small></span>
               <span><strong>2</strong><small>Translations</small></span>
+              <span><strong>▶</strong><small>Continuous tilawat</small></span>
               <span><strong>∞</strong><small>Reflections</small></span>
             </div> : null}
+            {isQuranConfigured && chapters.length > 0 ? <p className="hero-tilawat-hint"><span aria-hidden="true">▶</span> Play an ayah, then turn on <strong>Auto-play all</strong> to continue through the Surah.</p> : null}
           </div>
         </section>
         <section className="shell home-content">{!isQuranConfigured ? <SetupCard /> : <ChapterDirectory chapters={chapters} />}</section>

@@ -316,10 +316,10 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
           {availableReciters.map((reciter) => <option key={reciter.id} value={reciter.id}>{reciter.name}</option>)}
         </select>
       </label>
-      <label className="audio-autoplay">
+      <label className="audio-autoplay" title="Play every ayah in this Surah continuously">
         <input type="checkbox" checked={player.autoPlayAll} onChange={(event) => player.setAutoPlayAll(event.target.checked)} />
         <span className="audio-autoplay-switch" aria-hidden="true" />
-        <span>Auto-play all</span>
+        <span className="audio-autoplay-copy"><strong>Auto-play all</strong><small>Continuous tilawat</small></span>
       </label>
     </aside>
   );
