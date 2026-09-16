@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import { getAdjacentVerseKeys } from "./navigation";
-import { parseJumpInput, parseVerseKey } from "./validation";
+import { parseJumpInput, parseOptionalResourceIds, parseVerseKey } from "./validation";
 
 describe("verse references", () => {
   it("parses a valid verse key", () => {
@@ -17,6 +17,10 @@ describe("verse references", () => {
     expect(parseJumpInput("2")).toEqual({ kind: "chapter", chapter: 2 });
     expect(parseJumpInput("36:1")).toEqual({ kind: "verse", chapter: 36, verse: 1 });
     expect(parseJumpInput("115")).toEqual({ kind: "invalid" });
+  });
+
+  it("preserves ordered repeated resource IDs without duplicates", () => {
+    expect(parseOptionalResourceIds(["20", "131", "20", "invalid"])).toEqual([20, 131]);
   });
 });
 

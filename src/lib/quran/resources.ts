@@ -89,6 +89,11 @@ export function getDefaultUrduTranslationId(resources: ReaderResources): number 
   return resources.translations.find((resource) => resource.languageName?.toLowerCase() === "urdu")?.id;
 }
 
+export function getDefaultTranslationIds(resources: ReaderResources): number[] {
+  return [getDefaultTranslationId(resources), getDefaultUrduTranslationId(resources)]
+    .filter((value, index, values): value is number => typeof value === "number" && values.indexOf(value) === index);
+}
+
 export function getDefaultTafsirId(resources: ReaderResources): number | undefined {
   return resources.tafsirs.find((resource) => resource.languageName?.toLowerCase() === "english")?.id
     ?? resources.tafsirs[0]?.id;

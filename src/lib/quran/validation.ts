@@ -35,6 +35,13 @@ export function parseOptionalResourceId(value: string | undefined): number | und
   return Number.isInteger(id) && id > 0 ? id : undefined;
 }
 
+export function parseOptionalResourceIds(value: string | string[] | undefined): number[] {
+  const values = Array.isArray(value) ? value : value ? [value] : [];
+  return values
+    .map((item) => parseOptionalResourceId(item))
+    .filter((item, index, parsed): item is number => typeof item === "number" && parsed.indexOf(item) === index);
+}
+
 export function parseJumpInput(value: string):
   | { kind: "chapter"; chapter: number }
   | { kind: "verse"; chapter: number; verse: number }

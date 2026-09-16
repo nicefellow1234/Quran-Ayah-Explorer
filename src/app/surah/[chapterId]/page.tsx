@@ -9,13 +9,11 @@ import { ReaderClient } from "@/components/quran/reader-client";
 import { getChapter } from "@/lib/quran/chapters";
 import { isQuranConfigured } from "@/lib/quran/client";
 import { QuranApiError } from "@/lib/quran/errors";
-import { getDefaultReciterId, getDefaultTafsirId, getDefaultTranslationId, getDefaultUrduTranslationId, getReaderResources } from "@/lib/quran/resources";
+import { getDefaultReciterId, getDefaultTafsirId, getDefaultTranslationIds, getReaderResources } from "@/lib/quran/resources";
 import { getChapterVerses } from "@/lib/quran/verses";
-import { parseChapterId, parseOptionalResourceId } from "@/lib/quran/validation";
+import { parseChapterId, parseOptionalResourceIds } from "@/lib/quran/validation";
 
 type PageProps = { params: Promise<{ chapterId: string }>; searchParams: Promise<{ translation?: string | string[] }> };
-
-function singleParam(value: string | string[] | undefined) { return Array.isArray(value) ? value[0] : value; }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { chapterId } = await params;
@@ -40,19 +38,16 @@ export default async function SurahPage({ params, searchParams }: PageProps) {
     if (error instanceof QuranApiError && error.status === 404) notFound();
     throw error;
   }
-  const requestedTranslation = parseOptionalResourceId(singleParam((await searchParams).translation));
-  const translationId = requestedTranslation && resources.translations.some((item) => item.id === requestedTranslation)
-    ? requestedTranslation
-    : getDefaultTranslationId(resources);
-  const translationIds = [translationId, getDefaultUrduTranslationId(resources)]
-    .filter((value, index, values): value is number => typeof value === "number" && values.indexOf(value) === index);
+  const requestedTranslationIds = parseOptionalResourceIds((await searchParams).translation)
+    .filter((translationId) => resources.translations.some((item) => item.id === translationId));
+  const translationIds = requestedTranslationIds.length ? requestedTranslationIds : getDefaultTranslationIds(resources);
   const verses = await getChapterVerses(id, translationIds);
   const previousChapter = id > 1 ? id - 1 : null;
   const nextChapter = id < 114 ? id + 1 : null;
 
   return (
     <>
-      <SiteHeader translations={resources.translations} selectedTranslationId={translationId} />
+      <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} />
       <main className="shell reader-page">
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">All Surahs</Link><span>/</span><span>Surah {chapter.id}</span></nav>
         <header className="reader-header">

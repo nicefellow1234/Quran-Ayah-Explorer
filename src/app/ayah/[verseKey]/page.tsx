@@ -9,13 +9,12 @@ import { ReaderClient } from "@/components/quran/reader-client";
 import { getChapter } from "@/lib/quran/chapters";
 import { isQuranConfigured } from "@/lib/quran/client";
 import { QuranApiError } from "@/lib/quran/errors";
-import { getDefaultReciterId, getDefaultTafsirId, getDefaultTranslationId, getDefaultUrduTranslationId, getReaderResources } from "@/lib/quran/resources";
+import { getDefaultReciterId, getDefaultTafsirId, getDefaultTranslationIds, getReaderResources } from "@/lib/quran/resources";
 import { getAdjacentVerseKeys } from "@/lib/quran/navigation";
 import { getVerse } from "@/lib/quran/verses";
-import { parseOptionalResourceId, parseVerseKey } from "@/lib/quran/validation";
+import { parseOptionalResourceIds, parseVerseKey } from "@/lib/quran/validation";
 
 type PageProps = { params: Promise<{ verseKey: string }>; searchParams: Promise<{ translation?: string | string[] }> };
-function singleParam(value: string | string[] | undefined) { return Array.isArray(value) ? value[0] : value; }
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { verseKey } = await params;
@@ -36,12 +35,9 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
     if (error instanceof QuranApiError && error.status === 404) notFound();
     throw error;
   }
-  const requestedTranslation = parseOptionalResourceId(singleParam((await searchParams).translation));
-  const translationId = requestedTranslation && resources.translations.some((item) => item.id === requestedTranslation)
-    ? requestedTranslation
-    : getDefaultTranslationId(resources);
-  const translationIds = [translationId, getDefaultUrduTranslationId(resources)]
-    .filter((value, index, values): value is number => typeof value === "number" && values.indexOf(value) === index);
+  const requestedTranslationIds = parseOptionalResourceIds((await searchParams).translation)
+    .filter((id) => resources.translations.some((item) => item.id === id));
+  const translationIds = requestedTranslationIds.length ? requestedTranslationIds : getDefaultTranslationIds(resources);
   let verse;
   try {
     verse = await getVerse(`${parsed.chapter}:${parsed.verse}`, translationIds);
@@ -53,7 +49,7 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <SiteHeader translations={resources.translations} selectedTranslationId={translationId} />
+      <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} />
       <main className="shell reader-page ayah-page">
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">All Surahs</Link><span>/</span><Link href={`/surah/${parsed.chapter}`}>Surah {parsed.chapter}</Link><span>/</span><span>Ayah {parsed.verse}</span></nav>
         <header className="ayah-header reader-header">

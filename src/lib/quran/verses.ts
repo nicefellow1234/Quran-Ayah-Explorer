@@ -6,7 +6,7 @@ import { QuranApiError } from "./errors";
 import { parseChapterId, parseVerseKey } from "./validation";
 import type { VerseTranslation, VerseViewModel } from "./types";
 
-function normalizeVerse(verse: Verse, primaryTranslationId?: number): VerseViewModel {
+function normalizeVerse(verse: Verse, translationIds?: number[]): VerseViewModel {
   const translations = (verse.translations ?? [])
     .filter((translation): translation is typeof translation & { resourceId: number; text: string } => Boolean(translation.resourceId && translation.text))
     .map<VerseTranslation>((translation) => ({
@@ -16,11 +16,11 @@ function normalizeVerse(verse: Verse, primaryTranslationId?: number): VerseViewM
       languageName: translation.languageName,
     }));
 
-  if (primaryTranslationId) {
+  if (translationIds?.length) {
+    const requestedOrder = new Map(translationIds.map((id, index) => [id, index]));
     translations.sort((left, right) => {
-      if (left.id === primaryTranslationId) return -1;
-      if (right.id === primaryTranslationId) return 1;
-      return 0;
+      return (requestedOrder.get(left.id) ?? Number.MAX_SAFE_INTEGER)
+        - (requestedOrder.get(right.id) ?? Number.MAX_SAFE_INTEGER);
     });
   }
 
@@ -59,7 +59,7 @@ async function fetchChapterVersesPage(chapterId: number, translationIds: number[
       fields: verseContentFields,
       translationFields,
     });
-    return verses.map((verse) => normalizeVerse(verse, translationIds?.[0]));
+    return verses.map((verse) => normalizeVerse(verse, translationIds));
   } catch (error) {
     logQuranError(`verses.byChapter:${chapterId}:page:${page}`, error);
     throw new QuranApiError(
@@ -97,7 +97,7 @@ export async function getVerse(verseKey: string, translationIds?: number[]): Pro
       fields: verseContentFields,
       translationFields,
     });
-    return normalizeVerse(rawVerse, translationIds?.[0]);
+    return normalizeVerse(rawVerse, translationIds);
   } catch (error) {
     logQuranError(`verses.byKey:${normalizedKey}`, error);
     if (error instanceof QuranApiError && error.status === 404) throw error;

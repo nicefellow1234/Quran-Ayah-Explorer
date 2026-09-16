@@ -206,12 +206,58 @@ html[data-surah-names-font-ready="true"] .chapter-icon::before { visibility: vis
 .audio-time { color: #83928b; white-space: nowrap; font-size: 9px; font-variant-numeric: tabular-nums; }
 .dialog-backdrop { position: fixed; inset: 0; z-index: 50; display: grid; place-items: center; padding: 20px; background: rgba(23, 42, 35, .32); backdrop-filter: blur(5px); }
 .settings-dialog, .tafsir-panel { width: min(100%, 480px); padding: 26px; border: 1px solid #c9d9cd; border-radius: 17px; background: var(--surface); box-shadow: 0 28px 80px rgba(23, 42, 35, .22); }
+.settings-dialog { width: min(100%, 590px); }
 .tafsir-panel { align-self: stretch; justify-self: end; width: min(540px, 100%); overflow-y: auto; border-radius: 18px 0 0 18px; }
 .tafsir-backdrop { place-items: stretch; justify-items: end; padding: 0; }
 .dialog-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; margin-bottom: 24px; }
 .dialog-heading h2 { font-size: 24px; letter-spacing: -.04em; margin: 0; }
 .tafsir-resource-name { color: var(--muted); font-size: 11px; line-height: 1.5; margin: 5px 0 0; }
 .field-label { display: grid; gap: 8px; color: var(--ink); font-size: 12px; font-weight: 800; }
+.translation-settings-heading { display: flex; align-items: end; justify-content: space-between; gap: 18px; margin-bottom: 10px; }
+.translation-settings-heading > div { display: grid; gap: 3px; }
+.translation-settings-heading strong { font-size: 13px; }
+.translation-settings-heading span, .translation-settings-heading b { color: var(--muted); font-size: 10px; font-weight: 400; }
+.translation-settings-heading b { color: var(--accent); font-weight: 800; white-space: nowrap; }
+.translation-order-list { display: grid; gap: 7px; }
+.translation-order-item { display: grid; grid-template-columns: 18px 25px minmax(0, 1fr) auto; align-items: center; gap: 8px; min-height: 52px; padding: 6px 8px; border: 1px solid #dfe8e1; border-radius: 11px; background: #f8fbf8; transition: .18s ease; }
+.translation-order-item:hover { border-color: #bfd4c5; background: white; }
+.translation-order-item.is-dragging { opacity: .55; border-color: var(--accent); background: var(--accent-soft); }
+.translation-drag-handle { display: grid; place-items: center; color: #9aaa9f; cursor: grab; }
+.translation-drag-handle:active { cursor: grabbing; }
+.translation-order-number { display: grid; place-items: center; width: 25px; height: 25px; border-radius: 8px; color: var(--accent); background: var(--accent-soft); font-size: 10px; font-weight: 800; }
+.translation-order-copy { display: grid; min-width: 0; gap: 3px; }
+.translation-order-copy strong, .translation-order-copy small { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.translation-order-copy strong { color: var(--ink); font-size: 12px; }
+.translation-order-copy small { color: var(--muted); font-size: 10px; font-weight: 400; }
+.translation-order-actions { display: inline-flex; gap: 2px; }
+.translation-move-button, .translation-remove-button { display: grid; place-items: center; width: 27px; height: 27px; border: 0; border-radius: 7px; color: var(--muted); background: transparent; }
+.translation-move-button:hover:not(:disabled) { color: var(--accent); background: var(--accent-soft); }
+.translation-remove-button:hover:not(:disabled) { color: #a35454; background: #faece9; }
+.translation-move-button:disabled, .translation-remove-button:disabled { cursor: not-allowed; opacity: .28; }
+.translation-order-help { color: var(--muted); font-size: 10px; line-height: 1.5; margin: 9px 0 18px; }
+.translation-add-field { display: grid; gap: 8px; }
+.settings-field-label { color: var(--ink); font-size: 12px; font-weight: 800; }
+.settings-status { color: #9a6246; font-size: 11px; margin: 9px 0 0; }
+.translation-picker { position: relative; width: 100%; font-size: 12px; font-weight: 400; }
+.translation-combobox { position: relative; display: flex; align-items: center; height: 44px; border: 1px solid var(--line); border-radius: 10px; background: white; transition: .18s ease; }
+.translation-combobox:focus-within, .translation-picker.is-open .translation-combobox { border-color: #90b6a4; box-shadow: 0 0 0 4px rgba(225,238,232,.9); }
+.translation-search-icon { flex: 0 0 auto; color: #89a096; margin-left: 12px; }
+.translation-combobox input { width: 100%; min-width: 0; height: 100%; border: 0; outline: 0; color: var(--ink); background: transparent; padding: 0 9px; font-size: 12px; }
+.translation-combobox input::placeholder { color: var(--muted); opacity: 1; }
+.translation-menu-button { display: grid; place-items: center; width: 39px; height: 100%; flex: 0 0 auto; border: 0; border-left: 1px solid #edf1ed; border-radius: 0 10px 10px 0; color: var(--muted); background: transparent; }
+.translation-menu-button:hover { color: var(--accent); background: var(--accent-soft); }
+.translation-menu { position: absolute; top: calc(100% + 8px); right: 0; left: 0; z-index: 60; max-height: min(350px, 48vh); overflow-y: auto; padding: 8px; border: 1px solid #cfdad2; border-radius: 13px; background: #fffefa; box-shadow: 0 20px 45px rgba(31, 69, 57, .18); }
+.translation-menu-meta { display: flex; justify-content: space-between; gap: 8px; padding: 5px 8px 9px; color: #91a097; font-size: 9px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; }
+.translation-group + .translation-group { margin-top: 8px; padding-top: 7px; border-top: 1px solid #e7eee8; }
+.translation-group-label { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 5px 8px 4px; color: var(--accent); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.translation-group-label small { display: grid; place-items: center; min-width: 18px; height: 18px; border-radius: 999px; color: var(--accent-dark); background: var(--accent-soft); font-size: 9px; letter-spacing: 0; }
+.translation-option { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 42px; gap: 9px; border: 0; border-radius: 9px; color: var(--ink); background: transparent; padding: 5px 8px; text-align: left; }
+.translation-option:hover, .translation-option.is-active { background: #f0f6f1; }
+.translation-option > svg { flex: 0 0 auto; color: var(--accent); }
+.translation-option-copy { display: grid; min-width: 0; gap: 2px; }
+.translation-option-copy strong { overflow: hidden; font-size: 12px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+.translation-option-copy small { overflow: hidden; color: var(--muted); font-size: 10px; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+.translation-empty { color: var(--muted); font-size: 12px; margin: 20px 10px; text-align: center; }
 .tafsir-picker { position: relative; width: 100%; font-size: 12px; font-weight: 400; }
 .tafsir-combobox { position: relative; display: flex; align-items: center; height: 42px; border: 1px solid var(--line); border-radius: 9px; background: white; transition: .18s ease; }
 .tafsir-combobox:focus-within, .tafsir-picker.is-open .tafsir-combobox { border-color: #90b6a4; box-shadow: 0 0 0 4px rgba(225,238,232,.9); }

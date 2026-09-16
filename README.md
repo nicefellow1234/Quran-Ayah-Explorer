@@ -15,7 +15,8 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Full Surah reader at `/surah/[chapterId]` with lazy loading as the reader approaches the end of the loaded content.
 - Arabic Quran text rendered with the IndoPak font and right-to-left layout.
 - English and Urdu translations, including Urdu RTL layout and Mehr Nastaliq typography.
-- Translation selection persisted in the browser and represented in the URL.
+- Multiple translations can be added at the same time, with English and Urdu selected by default.
+- Translation selection and ordering are persisted in the browser and represented as ordered repeated `translation` URL parameters.
 - Tafsir resource selector in an accessible side panel on desktop and bottom sheet on mobile.
 - Safe rendering of Quran Foundation footnote markup and sanitized tafsir HTML.
 - Recitation audio with reciter selection, play/pause, previous/next ayah, duration seek bar, and persisted reciter preference.
@@ -51,8 +52,15 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Copy action includes Arabic, available translations, and the Quran reference.
 - Share action uses the native share dialog when available and falls back to copying the ayah URL.
 - Toast/status feedback after a successful copy action.
-- Translation selection through the Settings dialog, with the selected resource reflected in the URL.
-- Translation preference persisted locally for return visits.
+- Reading Settings supports any number of available translations at the same time.
+- English is followed by Urdu by default when no translation preference is present.
+- Translations can be searched by language, resource name, or author and added without replacing existing selections.
+- Selected translations are displayed in an explicit order under each ayah.
+- Selected translations can be reordered by dragging the row or using accessible up/down controls.
+- Any selected translation can be removed, with at least one translation retained for a useful reading state.
+- The ordered selection is represented by repeated `translation` query parameters for shareable URLs.
+- Translation order is preserved through server fetching, caching, lazy-loaded verse pages, and client rendering.
+- Translation preferences persist locally for return visits, including migration from the previous single-translation preference.
 
 ### Full Surah loading
 

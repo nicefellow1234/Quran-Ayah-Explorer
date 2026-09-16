@@ -8,10 +8,10 @@ import { SettingsDialog } from "../settings/settings-dialog";
 
 type SiteHeaderProps = {
   translations?: ResourceOption[];
-  selectedTranslationId?: number;
+  selectedTranslationIds?: number[];
 };
 
-export function SiteHeader({ translations = [], selectedTranslationId }: SiteHeaderProps) {
+export function SiteHeader({ translations = [], selectedTranslationIds }: SiteHeaderProps) {
   return (
     <header className="site-header">
       <div className="shell header-inner">
@@ -27,7 +27,7 @@ export function SiteHeader({ translations = [], selectedTranslationId }: SiteHea
           {translations.length > 0 ? (
             <SettingsDialog
               translations={translations}
-              selectedTranslationId={selectedTranslationId}
+              selectedTranslationIds={selectedTranslationIds}
             />
           ) : null}
         </div>
