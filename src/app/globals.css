@@ -331,8 +331,9 @@ html[data-surah-names-font-ready="true"] .chapter-icon::before { visibility: vis
   .hero { min-height: auto; gap: 24px; padding-block: 62px 58px; }
   .picker-fields { grid-template-columns: 1fr; }
   .chapter-grid { grid-template-columns: repeat(2, 1fr); }
-  .reader-header { align-items: flex-start; flex-direction: column-reverse; gap: 13px; }
-  .reader-surah-icon { min-width: 0; font-size: 62px; text-align: left; }
+  .reader-header { align-items: center; flex-direction: column-reverse; gap: 13px; }
+  .reader-header > div { width: 100%; text-align: center; }
+  .reader-surah-icon { width: 100%; min-width: 0; font-size: 62px; text-align: center; }
   .audio-dock { gap: 8px; }
   .audio-dock-info { min-width: 115px; }
   .audio-reciter { min-width: 115px; max-width: 135px; }
