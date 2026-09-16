@@ -13,9 +13,10 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Searchable Surah and ayah picker with keyboard support, Surah icon previews, +/- controls, and a range slider.
 - Header Quran navigator with `Ctrl K` access, reference validation, and shortcuts to popular Surahs and ayahs.
 - Stable deep links for individual ayahs, for example `/ayah/2:255`.
-- Full Surah reader at `/surah/[chapterId]` with lazy loading as the reader approaches the end of the loaded content.
+- Full Surah reader at `/surah/[chapterId]` with reliable lazy loading as the reader approaches the end of the loaded content.
 - Reader mode toggle with an Arabic-first Mushaf layout, Surah identity card, Listen/Info controls, Arabic/Translation tabs, waqf marks, numbered ayah medallions, and timed word highlighting; it opens on Arabic without showing translations or tafsir controls.
-- Light, dark, and System appearance modes with a persistent header switcher; System is selected by default and follows the device color scheme.
+- Quran.com-style Translation reading mode with one continuous numbered translation paragraph, a compact active-translation pill, a “My Translations” menu, and a shortcut into Reading Settings.
+- Light, dark, and System appearance modes with a persistent three-position slider in the header; System is selected by default and follows the device color scheme.
 - Arabic Quran text rendered with the IndoPak font and right-to-left layout.
 - English and Urdu translations, including Urdu RTL layout and Mehr Nastaliq typography.
 - Multiple translations can be added at the same time, with English and Urdu selected by default.
@@ -23,7 +24,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Tafsir resource selector in an accessible side panel on desktop and bottom sheet on mobile.
 - Safe rendering of Quran Foundation footnote markup and sanitized tafsir HTML.
 - Recitation audio with reciter selection, play/pause, previous/next ayah, duration seek bar, and persisted reciter preference.
-- Word-level Arabic highlighting follows the active reciter’s timed audio segments during playback.
+- Word-level Arabic highlighting follows the active reciter’s timed audio segments during playback, with theme-aware contrast in light and dark modes.
 - The reciter selector checks the active ayah and only lists Qaris with available audio; changing Qari stops the current audio and restarts that ayah from the beginning.
 - Optional “Auto-play all” mode, disabled by default, that advances through the current Surah and smoothly scrolls the playing ayah into view.
 - Responsive design, reduced-motion support, keyboard-accessible controls, loading states, and user-safe error states.
@@ -67,10 +68,22 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Translation order is preserved through server fetching, caching, lazy-loaded verse pages, and client rendering.
 - Translation preferences persist locally for return visits, including migration from the previous single-translation preference.
 
+#### Reading mode views
+
+- Arabic view presents the Surah as a continuous Mushaf-style layout instead of separate translation cards.
+- Arabic view preserves waqf marks from the IndoPak text and renders numbered ayah medallions in the flow of the text.
+- The active Arabic word changes color as the recitation progresses; the highlight is color-only and tuned for both light and dark themes.
+- Translation view removes the standalone Arabic reading surface and presents the selected translation as one continuous numbered paragraph; English is left-to-right and RTL resources retain their language direction.
+- Translation view renders Quran Foundation footnotes as styled superscripts rather than exposing raw `<sup foot_note=...>` markup.
+- The active translation is shown in the header as `Translation: …`; opening the pill shows the configured translations and the “Select Translations” shortcut.
+- Selecting a translation updates the `translationView` query parameter while preserving the complete ordered `translation` selection.
+- Translation mode omits the separate Arabic Bismillah line because the opening translation is already part of the numbered content; Arabic mode keeps the Arabic Bismillah presentation where supplied.
+
 ### Full Surah loading
 
 - Initial Surah content is fetched in a page rather than making one request per ayah.
 - Additional ayah pages load automatically as the reader approaches the bottom of the loaded content.
+- Infinite loading is checked through IntersectionObserver plus scroll and resize near-bottom checks, so loading continues even when the sentinel remains visible after a page append.
 - Loading, retry, and end-of-Surah states are shown in the reader.
 - Autoplay can request additional lazy-loaded pages until the next playing ayah is available in the document.
 - Autoplay scrolls the active ayah smoothly into a centered viewport position.
@@ -105,6 +118,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 ### UI, accessibility, and resilience
 
 - Responsive layouts for desktop, tablet, and mobile widths.
+- Header appearance slider switches between System, Light, and Dark; the System option follows `prefers-color-scheme`, and the preference is persisted locally.
 - Mobile audio dock reorganizes into stacked controls while preserving seek and reciter controls.
 - Mobile tafsir changes from a side panel to a bottom sheet.
 - Visible keyboard focus states and keyboard support for custom dropdowns.
@@ -140,6 +154,25 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 | `/api/tafsir` | Same-origin lazy tafsir endpoint |
 
 `verseKey` uses the Quran reference format `chapter:ayah`, such as `1:7` or `36:58`.
+
+### Reader query parameters
+
+Reader preferences can be shared through the URL:
+
+| Parameter | Example | Purpose |
+| --- | --- | --- |
+| `translation` | `translation=20&translation=234` | Repeated ordered resource IDs used for the normal verse-by-verse reader and Reading Settings. |
+| `mode` | `mode=reading` | Opens the focused Reading mode. |
+| `view` | `view=translation` | Opens Reading mode on the continuous Translation view; without it, Arabic view is selected. |
+| `translationView` | `translationView=20` | Chooses which of the configured translations is displayed in continuous Translation view. |
+
+For example:
+
+```text
+/surah/2?translation=20&translation=234&mode=reading&view=translation&translationView=20
+```
+
+The application validates resource IDs against the available Quran Foundation catalog and falls back to the default English-then-Urdu selection when necessary.
 
 ## Technology
 
@@ -361,6 +394,8 @@ Vitest covers validation and markup behavior, including:
 Playwright covers the most important navigation states:
 
 - Home page configuration/live state
+- System/Light/Dark theme persistence and keyboard switching
+- Arabic Reading mode and continuous Translation mode, including the translation menu
 - Invalid Surah route handling
 - Encoded ayah URLs reaching the reader route
 
