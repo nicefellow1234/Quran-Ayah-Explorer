@@ -45,13 +45,16 @@ export function ReaderClient({
   const pageRef = useRef(1);
   const translationKey = translationIds.join(",");
   const audioQueue = useMemo(() => queueVerseKeys, [queueVerseKeys]);
-  const { setQueue, currentVerse, autoPlayAll } = useAudioPlayer();
+  const { setQueue, reset, currentVerse, autoPlayAll } = useAudioPlayer();
   const lastScrolledVerseRef = useRef<string | null>(null);
   const [hasReachedEnd, setHasReachedEnd] = useState(false);
   const hasMore = !hasReachedEnd && loadedVerses.length < totalVerses;
   const hasMoreRef = useRef(hasMore);
 
-  useEffect(() => { setQueue(audioQueue); }, [setQueue, audioQueue]);
+  useEffect(() => {
+    if (currentVerse && !audioQueue.includes(currentVerse)) reset();
+    setQueue(audioQueue);
+  }, [setQueue, reset, audioQueue, currentVerse]);
   useEffect(() => { hasMoreRef.current = hasMore; }, [hasMore]);
 
   const loadNextPage = useCallback(async () => {

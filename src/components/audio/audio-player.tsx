@@ -16,6 +16,7 @@ type AudioPlayerContextValue = {
   audioSegments: AudioSegment[];
   autoPlayAll: boolean;
   setQueue: (queue: string[]) => void;
+  reset: () => void;
   setAutoPlayAll: (enabled: boolean) => void;
   playVerse: (verseKey: string, reciterId?: number) => Promise<void>;
   changeReciter: (reciterId: number) => Promise<void>;
@@ -159,6 +160,23 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     setQueueState((previous) => previous.join("|") === nextQueue.join("|") ? previous : nextQueue);
   }, []);
 
+  const reset = useCallback(() => {
+    requestControllerRef.current?.abort();
+    requestControllerRef.current = null;
+    requestIdRef.current += 1;
+    const audio = audioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.removeAttribute("src");
+      audio.load();
+    }
+    setCurrentVerse(null);
+    setStatus("idle");
+    setCurrentTime(0);
+    setDuration(0);
+    setAudioSegments([]);
+  }, []);
+
   const setAutoPlayAll = useCallback((enabled: boolean) => {
     setAutoPlayAllState(enabled);
   }, []);
@@ -173,6 +191,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     audioSegments,
     autoPlayAll,
     setQueue,
+    reset,
     setAutoPlayAll,
     playVerse,
     changeReciter,
@@ -180,7 +199,7 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     seek,
     next: () => move(1),
     previous: () => move(-1),
-  }), [currentVerse, status, queue, reciterId, currentTime, duration, audioSegments, autoPlayAll, setQueue, setAutoPlayAll, playVerse, changeReciter, toggle, seek, move]);
+  }), [currentVerse, status, queue, reciterId, currentTime, duration, audioSegments, autoPlayAll, setQueue, reset, setAutoPlayAll, playVerse, changeReciter, toggle, seek, move]);
 
   return <AudioPlayerContext.Provider value={value}>{children}</AudioPlayerContext.Provider>;
 }
