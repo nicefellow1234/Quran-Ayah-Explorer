@@ -15,7 +15,7 @@ import { getAdjacentVerseKeys } from "@/lib/quran/navigation";
 import { getVerse } from "@/lib/quran/verses";
 import { parseOptionalResourceIds, parseVerseKey } from "@/lib/quran/validation";
 
-type PageProps = { params: Promise<{ verseKey: string }>; searchParams: Promise<{ translation?: string | string[]; mode?: string; view?: string }> };
+type PageProps = { params: Promise<{ verseKey: string }>; searchParams: Promise<{ translation?: string | string[]; mode?: string; view?: string; translationView?: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { verseKey } = await params;
@@ -42,6 +42,8 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
   const requestedTranslationIds = parseOptionalResourceIds(requestedParams.translation)
     .filter((id) => resources.translations.some((item) => item.id === id));
   const translationIds = requestedTranslationIds.length ? requestedTranslationIds : getDefaultTranslationIds(resources);
+  const requestedReadingTranslationId = Number(requestedParams.translationView);
+  const readingTranslationId = translationIds.includes(requestedReadingTranslationId) ? requestedReadingTranslationId : translationIds[0];
   const contentTranslationIds = translationIds;
   let verse;
   try {
@@ -57,7 +59,7 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
       <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} showReaderMode />
       <main className={`shell reader-page ayah-page${readingMode ? " reading-mode" : ""}`}>
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">All Surahs</Link><span>/</span><Link href={`/surah/${parsed.chapter}`}>Surah {parsed.chapter}</Link><span>/</span><span>Ayah {parsed.verse}</span></nav>
-        {readingMode ? <ReadingModeHeader chapter={chapter} view={readingView} defaultReciterId={getDefaultReciterId(resources)} /> : <header className="ayah-header reader-header">
+        {readingMode ? <ReadingModeHeader chapter={chapter} view={readingView} defaultReciterId={getDefaultReciterId(resources)} translations={resources.translations} selectedTranslationIds={translationIds} selectedTranslationId={readingTranslationId} /> : <header className="ayah-header reader-header">
           <div><p className="eyebrow">Surah {String(chapter.id).padStart(3, "0")} · {chapter.revelationPlace}</p><h1>{chapter.transliteratedName || chapter.nameSimple}</h1><p className="reader-subtitle">{chapter.translatedName} · {chapter.versesCount} ayahs</p></div>
           <span
             className="chapter-icon reader-surah-icon"
@@ -67,7 +69,7 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
             translate="no"
           />
         </header>}
-        <ReaderClient key={`ayah-${verse.verseKey}-${contentTranslationIds.join(",")}-${readingMode ? "reading" : "verse"}`} chapterId={parsed.chapter} totalVerses={1} translationIds={contentTranslationIds} queueVerseKeys={[verse.verseKey]} verses={[verse]} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} readingMode={readingMode} readingView={readingMode ? readingView : "both"} />
+        <ReaderClient key={`ayah-${verse.verseKey}-${contentTranslationIds.join(",")}-${readingMode ? "reading" : "verse"}`} chapterId={parsed.chapter} totalVerses={1} translationIds={contentTranslationIds} queueVerseKeys={[verse.verseKey]} verses={[verse]} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} readingMode={readingMode} readingView={readingMode ? readingView : "both"} readingTranslationId={readingMode ? readingTranslationId : undefined} />
         <nav className="reader-navigation ayah-navigation" aria-label="Ayah navigation">
           {previousKey ? <Link href={`/ayah/${previousKey}`} className="button button-quiet"><ArrowLeft size={16} aria-hidden="true" /> Previous ayah</Link> : <span />}
           <Link href={`/surah/${parsed.chapter}`} className="button button-quiet">Complete Surah</Link>

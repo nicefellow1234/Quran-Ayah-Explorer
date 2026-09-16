@@ -17,18 +17,21 @@ test("theme switcher defaults to System and persists an explicit theme", async (
   const root = page.locator("html");
 
   await expect(root).toHaveAttribute("data-theme-preference", "system");
-  await page.getByRole("button", { name: "Color theme: System" }).click();
-  await page.getByRole("menuitemradio", { name: "Dark" }).click();
+  await expect(page.getByRole("radio", { name: "System", exact: true })).toBeChecked();
+  await page.getByRole("radio", { name: "Dark", exact: true }).check();
   await expect(root).toHaveAttribute("data-theme", "dark");
   await expect(root).toHaveAttribute("data-theme-preference", "dark");
-  await expect(page.getByRole("button", { name: "Color theme: Dark" })).toBeVisible();
+  await expect(page.getByRole("radio", { name: "Dark", exact: true })).toBeChecked();
 
   await page.reload();
   await expect(root).toHaveAttribute("data-theme", "dark");
   await expect(root).toHaveAttribute("data-theme-preference", "dark");
+  await expect(page.getByRole("radio", { name: "Dark", exact: true })).toBeChecked();
 
-  await page.getByRole("button", { name: "Color theme: Dark" }).click();
-  await page.getByRole("menuitemradio", { name: "System" }).click();
+  await page.getByRole("radio", { name: "Dark", exact: true }).focus();
+  await page.keyboard.press("ArrowLeft");
+  await expect(root).toHaveAttribute("data-theme", "light");
+  await page.keyboard.press("ArrowLeft");
   await expect(root).toHaveAttribute("data-theme-preference", "system");
   await page.emulateMedia({ colorScheme: "dark" });
   await expect(root).toHaveAttribute("data-theme", "dark");
@@ -60,7 +63,7 @@ test("encoded ayah URLs reach the reader route", async ({ page }) => {
   }
 });
 
-test("Reading mode keeps Arabic and hides translations", async ({ page }) => {
+test("Reading mode switches between Arabic and continuous translation views", async ({ page }) => {
   await page.goto("/surah/1?mode=reading");
   const setupState = page.getByText("Connect Quran.Foundation to begin");
   if (await setupState.isVisible().catch(() => false)) return;
@@ -77,5 +80,14 @@ test("Reading mode keeps Arabic and hides translations", async ({ page }) => {
   await page.getByRole("tab", { name: "Translation", exact: true }).click();
   await expect(page).toHaveURL(/view=translation/);
   await expect(page.locator(".arabic-text")).toHaveCount(0);
-  await expect(page.locator(".translations-list").first()).toBeVisible();
+  await expect(page.locator(".reading-translation-text")).toBeVisible();
+  await expect(page.locator(".reading-translation-ayah").first()).toContainText("1.");
+  await expect(page.locator(".translations-list")).toHaveCount(0);
+  await expect(page.getByRole("tab", { name: /^Translation:/ })).toHaveAttribute("aria-selected", "true");
+  await page.getByRole("tab", { name: /^Translation:/ }).click();
+  await expect(page.getByRole("menu", { name: "My translations" })).toBeVisible();
+  await expect(page.getByText("My Translations:", { exact: true })).toBeVisible();
+  await expect(page.getByRole("menuitemradio").first()).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(page.getByRole("menu", { name: "My translations" })).toHaveCount(0);
 });

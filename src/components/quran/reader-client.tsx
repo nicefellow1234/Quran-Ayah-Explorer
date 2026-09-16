@@ -7,6 +7,7 @@ import type { ResourceOption, VerseViewModel } from "@/lib/quran/types";
 import { AudioDock, useAudioPlayer } from "../audio/audio-player";
 import { MushafReading } from "./mushaf-reading";
 import type { ReadingView } from "./reading-mode-header";
+import { TranslationReading } from "./translation-reading";
 import { VerseCard } from "./verse-card";
 
 export function ReaderClient({
@@ -21,6 +22,7 @@ export function ReaderClient({
   defaultReciterId,
   readingMode = false,
   readingView = readingMode ? "arabic" : "both",
+  readingTranslationId,
 }: {
   chapterId: number;
   totalVerses: number;
@@ -33,6 +35,7 @@ export function ReaderClient({
   defaultReciterId?: number;
   readingMode?: boolean;
   readingView?: ReadingView;
+  readingTranslationId?: number;
 }) {
   const [loadedVerses, setLoadedVerses] = useState(verses);
   const [isLoading, setIsLoading] = useState(false);
@@ -104,7 +107,7 @@ export function ReaderClient({
   return (
     <>
       <div className="verse-list">
-        {readingView === "arabic" ? <MushafReading verses={loadedVerses} defaultReciterId={defaultReciterId} /> : loadedVerses.map((verse) => (
+        {readingView === "arabic" ? <MushafReading verses={loadedVerses} defaultReciterId={defaultReciterId} /> : readingView === "translation" ? <TranslationReading verses={loadedVerses} translationId={readingTranslationId} /> : loadedVerses.map((verse) => (
           <VerseCard key={verse.id} verse={verse} tafsirs={tafsirs} defaultTafsirId={defaultTafsirId} defaultReciterId={defaultReciterId} readingView={readingView} />
         ))}
         {hasMore || isLoading || hasError ? (
