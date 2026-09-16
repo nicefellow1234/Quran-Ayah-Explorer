@@ -623,11 +623,15 @@ html[data-theme="dark"] .hero-tilawat-hint { border-color: var(--line); backgrou
   .reader-mode-toggle-mobile { display: inline-grid !important; place-items: center; width: 100% !important; height: 100%; min-height: 100% !important; padding: 0 !important; border-radius: 8px !important; }
   .theme-switcher-desktop { display: none; }
   .theme-switcher-mobile { display: inline-flex; width: 100%; height: 100%; }
-  .reading-mode-header { padding-inline: 11px; }
-  .reading-mode-chapter-icon { width: 82px; flex-basis: 82px; font-size: 36px; }
-  .reading-mode-heading-copy strong { font-size: 14px; }
-  .reading-mode-description { font-size: 8px; }
-  .reading-mode-action { padding-inline: 8px; }
+  .reading-mode-header { padding: 14px 12px 12px; }
+  .reading-mode-heading { gap: 8px; }
+  .reading-mode-chapter-icon { width: 74px; flex-basis: 74px; font-size: 34px; }
+  .reading-mode-heading-copy { gap: 3px; }
+  .reading-mode-heading-copy strong { font-size: 15px; }
+  .reading-mode-heading-copy span { font-size: 11px; }
+  .reading-mode-description { font-size: 10px; line-height: 1.5; margin: 8px 0 11px; }
+  .reading-mode-action { min-height: 29px; padding-inline: 8px; font-size: 10px; }
+  .reading-mode-tabs button { min-height: 27px; font-size: 10px; }
   .hero { padding-top: 46px; }
   .hero h1 { font-size: 52px; }
   .hero-subtitle { font-size: 16px; }
