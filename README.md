@@ -20,6 +20,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Tafsir resource selector in an accessible side panel on desktop and bottom sheet on mobile.
 - Safe rendering of Quran Foundation footnote markup and sanitized tafsir HTML.
 - Recitation audio with reciter selection, play/pause, previous/next ayah, duration seek bar, and persisted reciter preference.
+- The reciter selector checks the active ayah and only lists Qaris with available audio; changing Qari stops the current audio and restarts that ayah from the beginning.
 - Optional “Auto-play all” mode, disabled by default, that advances through the current Surah and smoothly scrolls the playing ayah into view.
 - Responsive design, reduced-motion support, keyboard-accessible controls, loading states, and user-safe error states.
 - Privacy policy and terms pages at `/privacy` and `/terms` for deployment configuration.

@@ -27,6 +27,32 @@ export async function getVerseAudio(verseKey: string, recitationId: number) {
   }
 }
 
+export async function getAvailableVerseRecitationIds(verseKey: string, recitationIds: number[]) {
+  const { chapter, verse } = parseVerseKey(verseKey);
+  if (!isQuranConfigured) {
+    throw new QuranApiError("Quran Foundation is not configured yet.", "audio");
+  }
+
+  const uniqueRecitationIds = [...new Set(recitationIds)];
+  if (!uniqueRecitationIds.length) return [];
+
+  try {
+    const client = getQuranClient();
+    const results = await Promise.allSettled(uniqueRecitationIds.map(async (recitationId) => {
+      const response = await client.content.v4.audio.verseRecitation.byKey(
+        `${chapter}:${verse}` as VerseKey,
+        String(recitationId),
+      );
+      return response.audioFiles.some((audio) => Boolean(audio.audioUrl)) ? recitationId : null;
+    }));
+
+    return results.flatMap((result) => result.status === "fulfilled" && result.value ? [result.value] : []);
+  } catch (error) {
+    logQuranError(`audio.availability:${chapter}:${verse}`, error);
+    throw new QuranApiError("Audio availability could not be checked.", "audio");
+  }
+}
+
 export async function getChapterAudio(chapterId: string | number, reciterId: number) {
   const id = parseChapterId(chapterId);
   if (!isQuranConfigured) {

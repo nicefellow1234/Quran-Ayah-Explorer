@@ -90,9 +90,13 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
     }
     const audio = audioRef.current;
     if (!audio) return;
-    const requestId = requestIdRef.current + 1;
-    requestIdRef.current = requestId;
     requestControllerRef.current?.abort();
+    requestIdRef.current += 1;
+    const requestId = requestIdRef.current;
+    audio.pause();
+    audio.currentTime = 0;
+    audio.removeAttribute("src");
+    audio.load();
     const controller = new AbortController();
     requestControllerRef.current = controller;
     setStatus("loading");
@@ -117,8 +121,9 @@ export function AudioPlayerProvider({ children }: { children: React.ReactNode })
 
   const changeReciter = useCallback(async (nextReciterId: number) => {
     setReciterId(nextReciterId);
-    if (currentVerse) await playVerse(currentVerse, nextReciterId);
-  }, [currentVerse, playVerse]);
+    const verse = currentVerseRef.current;
+    if (verse) await playVerse(verse, nextReciterId);
+  }, [playVerse]);
 
   useEffect(() => { playVerseRef.current = playVerse; }, [playVerse]);
 
@@ -187,6 +192,13 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
   const changeReciter = player.changeReciter;
   const hasInitializedReciter = useRef(false);
   const [selectedReciter, setSelectedReciter] = useState(defaultReciterId);
+  const [availability, setAvailability] = useState<{
+    key: string;
+    status: "ready" | "error";
+    reciterIds: number[];
+  } | null>(null);
+  const recitationIds = useMemo(() => reciters.map((reciter) => reciter.id).join(","), [reciters]);
+  const availabilityKey = player.currentVerse ? `${player.currentVerse}|${recitationIds}` : "";
 
   useEffect(() => {
     if (hasInitializedReciter.current) return;
@@ -202,6 +214,47 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
     if (selectedReciter) window.localStorage.setItem("ayah-explorer.reciter", String(selectedReciter));
   }, [selectedReciter]);
 
+  useEffect(() => {
+    if (!player.currentVerse || !recitationIds) return;
+
+    const controller = new AbortController();
+    void fetch(`/api/audio/availability?verseKey=${encodeURIComponent(player.currentVerse)}&recitationIds=${encodeURIComponent(recitationIds)}`, { signal: controller.signal })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("Audio availability request failed");
+        return response.json() as Promise<{ availableRecitationIds: number[] }>;
+      })
+      .then((data) => {
+        if (controller.signal.aborted) return;
+        setAvailability({ key: availabilityKey, status: "ready", reciterIds: data.availableRecitationIds });
+      })
+      .catch(() => {
+        if (!controller.signal.aborted) {
+          setAvailability({ key: availabilityKey, status: "error", reciterIds: [] });
+        }
+      });
+
+    return () => controller.abort();
+  }, [availabilityKey, player.currentVerse, recitationIds]);
+
+  const availabilityStatus = availability?.key === availabilityKey ? availability.status : player.currentVerse ? "loading" : "idle";
+  const availableReciterIds = useMemo(
+    () => availability?.key === availabilityKey ? availability.reciterIds : [],
+    [availability, availabilityKey],
+  );
+
+  const availableReciters = useMemo(
+    () => reciters.filter((reciter) => availableReciterIds.includes(reciter.id)),
+    [availableReciterIds, reciters],
+  );
+
+  useEffect(() => {
+    if (availabilityStatus !== "ready" || !availableReciters.length || !player.currentVerse) return;
+    if (player.reciterId && availableReciterIds.includes(player.reciterId)) return;
+    const nextReciterId = availableReciters[0]?.id;
+    if (!nextReciterId) return;
+    void changeReciter(nextReciterId);
+  }, [availabilityStatus, availableReciterIds, availableReciters, changeReciter, player.currentVerse, player.reciterId]);
+
   if (!player.currentVerse) return null;
 
   const formatTime = (value: number) => {
@@ -215,6 +268,10 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
     setSelectedReciter(nextReciterId);
     await player.changeReciter(nextReciterId);
   }
+
+  const selectedReciterValue = availableReciters.some((reciter) => reciter.id === selectedReciter)
+    ? selectedReciter
+    : availableReciters[0]?.id ?? "";
 
   return (
     <aside className="audio-dock" aria-label="Audio player" aria-busy={player.status === "loading"}>
@@ -247,8 +304,11 @@ export function AudioDock({ reciters, defaultReciterId }: { reciters: ResourceOp
       </div>
       <label className="audio-reciter">
         <span className="sr-only">Reciter</span>
-        <select value={selectedReciter ?? ""} onChange={(event) => void handleReciterChange(Number(event.target.value))} aria-label="Choose reciter">
-          {reciters.map((reciter) => <option key={reciter.id} value={reciter.id}>{reciter.name}</option>)}
+        <select value={selectedReciterValue} onChange={(event) => void handleReciterChange(Number(event.target.value))} aria-label="Choose reciter" disabled={availabilityStatus !== "ready" || !availableReciters.length}>
+          {availabilityStatus === "loading" ? <option value="">Finding available reciters…</option> : null}
+          {availabilityStatus === "error" ? <option value="">Reciters unavailable</option> : null}
+          {availabilityStatus === "ready" && !availableReciters.length ? <option value="">No audio available</option> : null}
+          {availableReciters.map((reciter) => <option key={reciter.id} value={reciter.id}>{reciter.name}</option>)}
         </select>
       </label>
       <label className="audio-autoplay">
