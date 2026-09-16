@@ -5,6 +5,23 @@ import { FontReadiness } from "@/components/layout/font-readiness";
 
 import "./globals.css";
 
+const themeInitializationScript = `
+  (function () {
+    var preference = "system";
+    try {
+      var stored = window.localStorage.getItem("ayah-explorer.theme");
+      if (stored === "light" || stored === "dark" || stored === "system") preference = stored;
+    } catch (error) {}
+    var resolved = preference === "system"
+      ? (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light")
+      : preference;
+    var root = document.documentElement;
+    root.dataset.theme = resolved;
+    root.dataset.themePreference = preference;
+    root.style.colorScheme = resolved;
+  })();
+`;
+
 export const metadata: Metadata = {
   title: { default: "Ayah Explorer — Explore the Quran", template: "%s — Ayah Explorer" },
   description: "Read, listen and reflect with translation and tafsir from Quran.Foundation.",
@@ -12,7 +29,8 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  return <html lang="en" data-scroll-behavior="smooth"><head>
+  return <html lang="en" data-scroll-behavior="smooth" suppressHydrationWarning><head>
+    <script dangerouslySetInnerHTML={{ __html: themeInitializationScript }} />
     <meta name="google" content="notranslate" />
     <link rel="preconnect" href="https://verses.quran.foundation" crossOrigin="anonymous" />
     <link rel="preconnect" href="https://cdn.jsdelivr.net" crossOrigin="anonymous" />

@@ -6,6 +6,7 @@ import type { ResourceOption } from "@/lib/quran/types";
 import { JumpForm } from "../navigation/jump-form";
 import { ReaderModeToggle } from "../navigation/reader-mode-toggle";
 import { SettingsDialog } from "../settings/settings-dialog";
+import { ThemeSwitcher } from "./theme-switcher";
 
 type SiteHeaderProps = {
   translations?: ResourceOption[];
@@ -27,6 +28,7 @@ export function SiteHeader({ translations = [], selectedTranslationIds, showRead
         <div className="header-tools">
           {showReaderMode ? <ReaderModeToggle /> : null}
           <JumpForm compact />
+          <ThemeSwitcher />
           {translations.length > 0 ? (
             <SettingsDialog
               translations={translations}

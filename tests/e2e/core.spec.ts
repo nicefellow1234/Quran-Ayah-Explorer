@@ -12,6 +12,28 @@ test("home page explains configuration when API credentials are absent", async (
   }
 });
 
+test("theme switcher defaults to System and persists an explicit theme", async ({ page }) => {
+  await page.goto("/");
+  const root = page.locator("html");
+
+  await expect(root).toHaveAttribute("data-theme-preference", "system");
+  await page.getByRole("button", { name: "Color theme: System" }).click();
+  await page.getByRole("menuitemradio", { name: "Dark" }).click();
+  await expect(root).toHaveAttribute("data-theme", "dark");
+  await expect(root).toHaveAttribute("data-theme-preference", "dark");
+  await expect(page.getByRole("button", { name: "Color theme: Dark" })).toBeVisible();
+
+  await page.reload();
+  await expect(root).toHaveAttribute("data-theme", "dark");
+  await expect(root).toHaveAttribute("data-theme-preference", "dark");
+
+  await page.getByRole("button", { name: "Color theme: Dark" }).click();
+  await page.getByRole("menuitemradio", { name: "System" }).click();
+  await expect(root).toHaveAttribute("data-theme-preference", "system");
+  await page.emulateMedia({ colorScheme: "dark" });
+  await expect(root).toHaveAttribute("data-theme", "dark");
+});
+
 test("invalid Surah routes show a not-found state", async ({ page }) => {
   test.setTimeout(30_000);
   await page.goto("/surah/500");

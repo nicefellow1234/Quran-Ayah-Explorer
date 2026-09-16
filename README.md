@@ -14,6 +14,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Stable deep links for individual ayahs, for example `/ayah/2:255`.
 - Full Surah reader at `/surah/[chapterId]` with lazy loading as the reader approaches the end of the loaded content.
 - Reader mode toggle with an Arabic-first layout, Surah identity card, Listen/Info controls, Arabic/Translation tabs, and timed word highlighting; it opens on Arabic without showing translations or tafsir controls.
+- Light, dark, and System appearance modes with a persistent header switcher; System is selected by default and follows the device color scheme.
 - Arabic Quran text rendered with the IndoPak font and right-to-left layout.
 - English and Urdu translations, including Urdu RTL layout and Mehr Nastaliq typography.
 - Multiple translations can be added at the same time, with English and Urdu selected by default.
