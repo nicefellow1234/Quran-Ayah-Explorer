@@ -40,7 +40,7 @@ button { cursor: pointer; }
 .reader-mode-toggle button.is-active { color: var(--ink); background: white; box-shadow: 0 2px 7px rgba(31, 69, 57, .1); }
 .reading-mode-header { width: min(100%, 580px); margin: 0 auto 13px; padding: 14px 14px 12px; border-radius: 14px; background: #f0f0f0; }
 .reading-mode-heading { display: flex; align-items: center; gap: 10px; }
-.reading-mode-chapter-icon { width: 78px; flex: 0 0 78px; overflow: visible; color: var(--ink); font-size: 41px; line-height: 1; text-align: left; white-space: nowrap; }
+.reading-mode-chapter-icon { width: 96px; flex: 0 0 96px; overflow: visible; color: var(--ink); font-size: 41px; line-height: 1; text-align: left; white-space: nowrap; }
 .reading-mode-heading-copy { display: grid; min-width: 0; gap: 2px; }
 .reading-mode-heading-copy strong { overflow: hidden; color: var(--ink); font-size: 15px; text-overflow: ellipsis; white-space: nowrap; }
 .reading-mode-heading-copy span { color: var(--muted); font-size: 13px; }
@@ -220,7 +220,7 @@ html[data-surah-names-font-ready="true"] .chapter-icon::before { visibility: vis
 .reader-subtitle, .ayah-header p:not(.eyebrow) { color: var(--muted); font-size: 14px; margin: 10px 0 0; }
 .reader-surah-icon { flex: 0 0 auto; min-width: 170px; color: var(--accent); font-size: clamp(68px, 7vw, 78px); line-height: .95; text-align: right; }
 .bismillah-divider { display: grid; place-items: center; height: 56px; }
-.bismillah-divider span { width: 72px; height: 1px; background: #b8cdbf; }
+.bismillah-divider > span:not(.bismillah-arabic) { width: 72px; height: 1px; background: #b8cdbf; }
 .reading-bismillah { height: auto; gap: 2px; margin: 13px auto 5px; text-align: center; }
 .bismillah-arabic { color: var(--ink); font-family: IndoPak !important; font-size: 28px; line-height: 1.7; }
 .reading-bismillah small { color: var(--muted); font-size: 9px; }
@@ -234,6 +234,17 @@ html[data-surah-names-font-ready="true"] .chapter-icon::before { visibility: vis
 .verse-actions { display: flex; gap: 2px; }
 .arabic-text { color: #1f302c; font-family: IndoPak !important; font-size: clamp(30px, 4vw, 43px); line-height: 2; text-align: right; margin: 21px 0 20px; }
 .reading-mode .arabic-text { font-size: clamp(34px, 5vw, 56px); line-height: 1.95; text-align: center; margin-block: 20px 6px; }
+.mushaf-page { width: 100%; padding: 4px 0 24px; }
+.reading-mode .mushaf-text { direction: rtl; margin: 12px 0 0; font-size: clamp(34px, 4vw, 43px); line-height: 1.75; text-align: justify; text-align-last: center; word-spacing: .025em; }
+.mushaf-ayah { scroll-margin-top: 120px; }
+.ayah-number-marker { position: relative; display: inline-grid; place-items: center; width: 1.16em; height: 1.16em; margin-inline: .09em; padding: 0; border: 0; color: currentColor; background: transparent; font-family: IndoPak !important; font-size: .64em; line-height: 1; vertical-align: .08em; }
+button.ayah-number-marker { cursor: pointer; transition: color .16s ease, transform .16s ease; }
+button.ayah-number-marker:hover { color: var(--accent); transform: scale(1.08); }
+.ayah-number-ornament { position: absolute; inset: .08em; border: .07em solid currentColor; border-radius: 50%; }
+.ayah-number-ornament::before, .ayah-number-ornament::after { position: absolute; left: 50%; width: .11em; height: .11em; background: currentColor; content: ""; transform: translateX(-50%) rotate(45deg); }
+.ayah-number-ornament::before { top: -.115em; }
+.ayah-number-ornament::after { bottom: -.115em; }
+.ayah-number-digits { position: relative; z-index: 1; display: grid; place-items: center; font-family: Arial, Helvetica, sans-serif; font-size: .38em; font-weight: 700; line-height: 1; transform: translateY(.02em); }
 .arabic-word { border-radius: .28em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: color .16s ease, background-color .16s ease, box-shadow .16s ease; }
 .arabic-word.is-reciting { color: #00a99d; background: transparent; box-shadow: none; text-shadow: 0 0 12px rgba(0, 169, 157, .28); }
 .translations-list { display: grid; width: 100%; gap: 18px; }
@@ -480,7 +491,7 @@ html[data-theme="dark"] .skeleton { background: linear-gradient(90deg, #1d2925 2
   .shell { width: calc(100% - 24px); }
   .brand-name { font-size: 14px; }
   .reading-mode-header { padding-inline: 11px; }
-  .reading-mode-chapter-icon { width: 70px; flex-basis: 70px; font-size: 36px; }
+  .reading-mode-chapter-icon { width: 82px; flex-basis: 82px; font-size: 36px; }
   .reading-mode-heading-copy strong { font-size: 14px; }
   .reading-mode-description { font-size: 8px; }
   .reading-mode-action { padding-inline: 8px; }

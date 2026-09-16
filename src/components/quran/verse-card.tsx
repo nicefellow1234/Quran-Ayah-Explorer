@@ -8,6 +8,7 @@ import { getActiveAudioWordRange } from "@/lib/quran/audio-segments";
 import { sanitizeTranslationMarkup } from "@/lib/quran/translation-markup";
 
 import { useAudioPlayer } from "../audio/audio-player";
+import { AyahNumber } from "./ayah-number";
 import type { ReadingView } from "./reading-mode-header";
 import { TafsirPanel } from "./tafsir-panel";
 
@@ -86,6 +87,7 @@ export function VerseCard({
           const isActive = Boolean(activeWordRange && index >= activeWordRange.from && index < activeWordRange.to);
           return <span className={`arabic-word${isActive ? " is-reciting" : ""}`} data-word-index={index} key={`${verse.verseKey}-${index}`}>{index ? " " : null}{word}</span>;
         })}
+        {" "}<AyahNumber verseNumber={verse.verseNumber} verseKey={verse.verseKey} />
       </p> : null}
       {showTranslations && verse.translations.length ? (
         <div className="translations-list">

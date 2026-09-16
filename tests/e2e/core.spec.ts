@@ -69,7 +69,8 @@ test("Reading mode keeps Arabic and hides translations", async ({ page }) => {
   await expect(page.locator(".reading-mode-header")).toBeVisible();
   await expect(page.getByRole("tab", { name: "Arabic", exact: true })).toHaveAttribute("aria-selected", "true");
   await expect(page.getByRole("tab", { name: "Translation", exact: true })).toBeVisible();
-  await expect(page.locator(".arabic-text").first()).toBeVisible();
+  await expect(page.locator(".mushaf-text")).toBeVisible();
+  await expect(page.locator(".ayah-number-marker").first()).toHaveAttribute("aria-label", "Play ayah 1:1");
   await expect(page.locator(".translations-list")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Open tafsir/ })).toHaveCount(0);
 
