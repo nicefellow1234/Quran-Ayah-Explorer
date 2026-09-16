@@ -21,7 +21,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   if (!isQuranConfigured) return { title: `Surah ${chapterId}` };
   try {
     const chapter = await getChapter(chapterId);
-    return { title: `Surah ${chapter.transliteratedName} (${chapter.id})`, description: `${chapter.translatedName} — ${chapter.versesCount} ayahs.` };
+    const name = chapter.transliteratedName || chapter.nameSimple || `Surah ${chapter.id}`;
+    return { title: `Surah ${name} (${chapter.id})`, description: `${chapter.translatedName || name} — ${chapter.versesCount} ayahs.` };
   } catch { return { title: "Surah not found" }; }
 }
 
