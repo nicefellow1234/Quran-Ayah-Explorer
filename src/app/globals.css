@@ -170,7 +170,7 @@ html[data-surah-names-font-ready="true"] .chapter-icon::before { visibility: vis
 .verse-actions { display: flex; gap: 2px; }
 .arabic-text { color: #1f302c; font-family: IndoPak !important; font-size: clamp(30px, 4vw, 43px); line-height: 2; text-align: right; margin: 21px 0 20px; }
 .arabic-word { border-radius: .28em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: color .16s ease, background-color .16s ease, box-shadow .16s ease; }
-.arabic-word.is-reciting { color: var(--accent-dark); background: rgba(141, 200, 178, .3); box-shadow: 0 0 0 .08em rgba(141, 200, 178, .14); }
+.arabic-word.is-reciting { color: #118c83; background: transparent; box-shadow: none; }
 .translations-list { display: grid; width: 100%; gap: 18px; }
 .translation-block { display: grid; gap: 5px; }
 .urdu-translation-block { width: 100%; direction: rtl; text-align: right; }
