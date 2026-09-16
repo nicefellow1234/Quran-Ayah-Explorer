@@ -529,9 +529,19 @@ html[data-theme="dark"] .hero-tilawat-hint { border-color: var(--line); backgrou
 }
 @media (max-width: 520px) {
   .shell { width: calc(100% - 24px); }
-  .header-inner { flex-wrap: wrap; gap: 10px; padding-block: 10px; }
-  .header-tools { margin-left: auto; }
-  .brand-name { font-size: 14px; }
+  .header-inner { min-height: 58px; flex-wrap: nowrap; gap: 8px; padding-block: 8px; }
+  .brand { min-width: 0; gap: 8px; }
+  .brand-mark { width: 32px; height: 32px; border-radius: 10px; }
+  .brand-name { overflow: hidden; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+  .header-tools { flex: 0 0 auto; gap: 4px; margin-left: auto; }
+  .header-tools > * { width: auto; }
+  .header-tools > .button { width: 32px; min-width: 32px; height: 32px; min-height: 32px; padding-inline: 0; border-radius: 9px; }
+  .jump-navigator-trigger { width: 32px; height: 32px; padding: 4px; }
+  .reader-mode-toggle { width: auto; padding: 2px; }
+  .reader-mode-toggle button { min-width: 24px; width: 24px; height: 28px; min-height: 28px; flex: 0 0 24px; padding-inline: 0; }
+  .theme-switcher { width: 64px; padding: 2px; border-radius: 10px; }
+  .theme-switcher-option-content { height: 30px; gap: 0; border-radius: 8px; }
+  .theme-switcher-thumb { top: 2px; bottom: 2px; left: 2px; width: calc((100% - 4px) / 3); border-radius: 8px; }
   .reading-mode-header { padding-inline: 11px; }
   .reading-mode-chapter-icon { width: 82px; flex-basis: 82px; font-size: 36px; }
   .reading-mode-heading-copy strong { font-size: 14px; }
@@ -582,6 +592,19 @@ html[data-theme="dark"] .hero-tilawat-hint { border-color: var(--line); backgrou
   .settings-dialog, .tafsir-panel { padding: 22px 18px; }
   .tafsir-panel { align-self: end; height: min(82vh, 700px); width: 100%; border-radius: 18px 18px 0 0; }
   .ayah-navigation { flex-wrap: wrap; }
-  .ayah-navigation > * { flex: 1 0 30%; }
+  .ayah-navigation > * { flex: 1 1 0; min-width: 0; }
+}
+@media (max-width: 360px) {
+  .header-inner { gap: 4px; }
+  .brand { gap: 5px; }
+  .brand-mark { width: 28px; height: 28px; border-radius: 8px; }
+  .brand-mark svg { width: 16px; height: 16px; }
+  .brand-name { font-size: 11px; }
+  .header-tools { gap: 2px; }
+  .header-tools > .button { width: 28px; min-width: 28px; height: 28px; min-height: 28px; }
+  .jump-navigator-trigger { width: 28px; height: 28px; }
+  .reader-mode-toggle button { min-width: 21px; width: 21px; height: 26px; min-height: 26px; flex-basis: 21px; }
+  .theme-switcher { width: 56px; }
+  .theme-switcher-option-content { height: 26px; }
 }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; transition-duration: .01ms !important; } }

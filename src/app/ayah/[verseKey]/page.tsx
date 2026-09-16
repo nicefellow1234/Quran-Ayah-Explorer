@@ -71,9 +71,9 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
         </header>}
         <ReaderClient key={`ayah-${verse.verseKey}-${contentTranslationIds.join(",")}-${readingMode ? "reading" : "verse"}`} chapterId={parsed.chapter} totalVerses={1} translationIds={contentTranslationIds} queueVerseKeys={[verse.verseKey]} verses={[verse]} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} readingMode={readingMode} readingView={readingMode ? readingView : "both"} readingTranslationId={readingMode ? readingTranslationId : undefined} />
         <nav className="reader-navigation ayah-navigation" aria-label="Ayah navigation">
-          {previousKey ? <Link href={`/ayah/${previousKey}`} className="button button-quiet"><ArrowLeft size={16} aria-hidden="true" /> Previous ayah</Link> : <span />}
+          {previousKey ? <Link href={`/ayah/${previousKey}`} className="button button-quiet"><ArrowLeft size={16} aria-hidden="true" /> Previous ayah</Link> : null}
           <Link href={`/surah/${parsed.chapter}`} className="button button-quiet">Complete Surah</Link>
-          {nextKey ? <Link href={`/ayah/${nextKey}`} className="button button-quiet">Next ayah <ArrowRight size={16} aria-hidden="true" /></Link> : <span />}
+          {nextKey ? <Link href={`/ayah/${nextKey}`} className="button button-quiet">Next ayah <ArrowRight size={16} aria-hidden="true" /></Link> : null}
         </nav>
       </main>
     </>
