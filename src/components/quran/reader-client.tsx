@@ -47,12 +47,15 @@ export function ReaderClient({
   const audioQueue = useMemo(() => queueVerseKeys, [queueVerseKeys]);
   const { setQueue, currentVerse, autoPlayAll } = useAudioPlayer();
   const lastScrolledVerseRef = useRef<string | null>(null);
-  const hasMore = loadedVerses.length < totalVerses;
+  const [hasReachedEnd, setHasReachedEnd] = useState(false);
+  const hasMore = !hasReachedEnd && loadedVerses.length < totalVerses;
+  const hasMoreRef = useRef(hasMore);
 
   useEffect(() => { setQueue(audioQueue); }, [setQueue, audioQueue]);
+  useEffect(() => { hasMoreRef.current = hasMore; }, [hasMore]);
 
   const loadNextPage = useCallback(async () => {
-    if (loadingRef.current || !hasMore) return;
+    if (loadingRef.current || !hasMoreRef.current) return;
     loadingRef.current = true;
     setIsLoading(true);
     setHasError(false);
@@ -65,6 +68,7 @@ export function ReaderClient({
         const known = new Set(current.map((verse) => verse.verseKey));
         return [...current, ...data.verses.filter((verse) => !known.has(verse.verseKey))];
       });
+      if (data.verses.length === 0) setHasReachedEnd(true);
       pageRef.current = nextPage;
     } catch {
       setHasError(true);
@@ -72,7 +76,7 @@ export function ReaderClient({
       loadingRef.current = false;
       setIsLoading(false);
     }
-  }, [chapterId, hasMore, translationKey]);
+  }, [chapterId, translationKey]);
 
   useEffect(() => {
     if (!autoPlayAll) {
@@ -97,12 +101,32 @@ export function ReaderClient({
   useEffect(() => {
     const node = sentinelRef.current;
     if (!node || !hasMore) return;
+
+    let frame: number | null = null;
+    const requestNearBottomCheck = () => {
+      if (frame !== null) return;
+      frame = window.requestAnimationFrame(() => {
+        frame = null;
+        if (loadingRef.current || !hasMoreRef.current) return;
+        if (node.getBoundingClientRect().top <= window.innerHeight + 900) void loadNextPage();
+      });
+    };
+
     const observer = new IntersectionObserver((entries) => {
-      if (entries[0]?.isIntersecting) void loadNextPage();
+      if (entries[0]?.isIntersecting) requestNearBottomCheck();
     }, { rootMargin: "900px 0px" });
     observer.observe(node);
-    return () => observer.disconnect();
-  }, [hasMore, loadNextPage]);
+    window.addEventListener("scroll", requestNearBottomCheck, { passive: true });
+    window.addEventListener("resize", requestNearBottomCheck);
+    requestNearBottomCheck();
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", requestNearBottomCheck);
+      window.removeEventListener("resize", requestNearBottomCheck);
+      if (frame !== null) window.cancelAnimationFrame(frame);
+    };
+  }, [hasMore, loadedVerses.length, loadNextPage]);
 
   return (
     <>
