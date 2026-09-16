@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { SetupCard } from "@/components/feedback/setup-card";
 import { SiteHeader } from "@/components/layout/site-header";
 import { ReaderClient } from "@/components/quran/reader-client";
+import { ReadingModeHeader } from "@/components/quran/reading-mode-header";
 import { getChapter } from "@/lib/quran/chapters";
 import { isQuranConfigured } from "@/lib/quran/client";
 import { QuranApiError } from "@/lib/quran/errors";
@@ -14,7 +15,7 @@ import { getAdjacentVerseKeys } from "@/lib/quran/navigation";
 import { getVerse } from "@/lib/quran/verses";
 import { parseOptionalResourceIds, parseVerseKey } from "@/lib/quran/validation";
 
-type PageProps = { params: Promise<{ verseKey: string }>; searchParams: Promise<{ translation?: string | string[]; mode?: string }> };
+type PageProps = { params: Promise<{ verseKey: string }>; searchParams: Promise<{ translation?: string | string[]; mode?: string; view?: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { verseKey } = await params;
@@ -37,10 +38,11 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
   }
   const requestedParams = await searchParams;
   const readingMode = requestedParams.mode === "reading";
+  const readingView = requestedParams.view === "translation" ? "translation" : "arabic";
   const requestedTranslationIds = parseOptionalResourceIds(requestedParams.translation)
     .filter((id) => resources.translations.some((item) => item.id === id));
   const translationIds = requestedTranslationIds.length ? requestedTranslationIds : getDefaultTranslationIds(resources);
-  const contentTranslationIds = readingMode ? [] : translationIds;
+  const contentTranslationIds = translationIds;
   let verse;
   try {
     verse = await getVerse(`${parsed.chapter}:${parsed.verse}`, contentTranslationIds);
@@ -55,7 +57,7 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
       <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} showReaderMode />
       <main className={`shell reader-page ayah-page${readingMode ? " reading-mode" : ""}`}>
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">All Surahs</Link><span>/</span><Link href={`/surah/${parsed.chapter}`}>Surah {parsed.chapter}</Link><span>/</span><span>Ayah {parsed.verse}</span></nav>
-        <header className="ayah-header reader-header">
+        {readingMode ? <ReadingModeHeader chapter={chapter} view={readingView} defaultReciterId={getDefaultReciterId(resources)} /> : <header className="ayah-header reader-header">
           <div><p className="eyebrow">Surah {String(chapter.id).padStart(3, "0")} · {chapter.revelationPlace}</p><h1>{chapter.transliteratedName || chapter.nameSimple}</h1><p className="reader-subtitle">{chapter.translatedName} · {chapter.versesCount} ayahs</p></div>
           <span
             className="chapter-icon reader-surah-icon"
@@ -64,8 +66,8 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
             role="img"
             translate="no"
           />
-        </header>
-        <ReaderClient key={`ayah-${verse.verseKey}-${contentTranslationIds.join(",")}-${readingMode ? "reading" : "verse"}`} chapterId={parsed.chapter} totalVerses={1} translationIds={contentTranslationIds} queueVerseKeys={[verse.verseKey]} verses={[verse]} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} readingMode={readingMode} />
+        </header>}
+        <ReaderClient key={`ayah-${verse.verseKey}-${contentTranslationIds.join(",")}-${readingMode ? "reading" : "verse"}`} chapterId={parsed.chapter} totalVerses={1} translationIds={contentTranslationIds} queueVerseKeys={[verse.verseKey]} verses={[verse]} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} readingMode={readingMode} readingView={readingMode ? readingView : "both"} />
         <nav className="reader-navigation ayah-navigation" aria-label="Ayah navigation">
           {previousKey ? <Link href={`/ayah/${previousKey}`} className="button button-quiet"><ArrowLeft size={16} aria-hidden="true" /> Previous ayah</Link> : <span />}
           <Link href={`/surah/${parsed.chapter}`} className="button button-quiet">Complete Surah</Link>

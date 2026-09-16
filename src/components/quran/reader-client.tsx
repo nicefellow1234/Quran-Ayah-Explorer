@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { ResourceOption, VerseViewModel } from "@/lib/quran/types";
 
 import { AudioDock, useAudioPlayer } from "../audio/audio-player";
+import type { ReadingView } from "./reading-mode-header";
 import { VerseCard } from "./verse-card";
 
 export function ReaderClient({
@@ -18,6 +19,7 @@ export function ReaderClient({
   defaultTafsirId,
   defaultReciterId,
   readingMode = false,
+  readingView = readingMode ? "arabic" : "both",
 }: {
   chapterId: number;
   totalVerses: number;
@@ -29,6 +31,7 @@ export function ReaderClient({
   defaultTafsirId?: number;
   defaultReciterId?: number;
   readingMode?: boolean;
+  readingView?: ReadingView;
 }) {
   const [loadedVerses, setLoadedVerses] = useState(verses);
   const [isLoading, setIsLoading] = useState(false);
@@ -101,7 +104,7 @@ export function ReaderClient({
     <>
       <div className="verse-list">
         {loadedVerses.map((verse) => (
-          <VerseCard key={verse.id} verse={verse} tafsirs={tafsirs} defaultTafsirId={defaultTafsirId} defaultReciterId={defaultReciterId} readingMode={readingMode} />
+          <VerseCard key={verse.id} verse={verse} tafsirs={tafsirs} defaultTafsirId={defaultTafsirId} defaultReciterId={defaultReciterId} readingView={readingView} />
         ))}
         {hasMore || isLoading || hasError ? (
           <div ref={sentinelRef} className="verse-list-loader" aria-live="polite">

@@ -35,7 +35,15 @@ test("Reading mode keeps Arabic and hides translations", async ({ page }) => {
   if (await setupState.isVisible().catch(() => false)) return;
 
   await expect(page.getByRole("button", { name: "Reading", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".reading-mode-header")).toBeVisible();
+  await expect(page.getByRole("tab", { name: "Arabic", exact: true })).toHaveAttribute("aria-selected", "true");
+  await expect(page.getByRole("tab", { name: "Translation", exact: true })).toBeVisible();
   await expect(page.locator(".arabic-text").first()).toBeVisible();
   await expect(page.locator(".translations-list")).toHaveCount(0);
   await expect(page.getByRole("button", { name: /Open tafsir/ })).toHaveCount(0);
+
+  await page.getByRole("tab", { name: "Translation", exact: true }).click();
+  await expect(page).toHaveURL(/view=translation/);
+  await expect(page.locator(".arabic-text")).toHaveCount(0);
+  await expect(page.locator(".translations-list").first()).toBeVisible();
 });

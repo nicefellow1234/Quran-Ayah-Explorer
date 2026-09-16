@@ -8,6 +8,7 @@ import { getActiveAudioWordRange } from "@/lib/quran/audio-segments";
 import { sanitizeTranslationMarkup } from "@/lib/quran/translation-markup";
 
 import { useAudioPlayer } from "../audio/audio-player";
+import type { ReadingView } from "./reading-mode-header";
 import { TafsirPanel } from "./tafsir-panel";
 
 export function VerseCard({
@@ -15,18 +16,21 @@ export function VerseCard({
   tafsirs,
   defaultTafsirId,
   defaultReciterId,
-  readingMode = false,
+  readingView = "both",
 }: {
   verse: VerseViewModel;
   tafsirs: ResourceOption[];
   defaultTafsirId?: number;
   defaultReciterId?: number;
-  readingMode?: boolean;
+  readingView?: ReadingView;
 }) {
   const audio = useAudioPlayer();
   const [tafsirOpen, setTafsirOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const arabicWords = verse.arabic.trim().split(/\s+/).filter(Boolean);
+  const showArabic = readingView !== "translation";
+  const showTranslations = readingView !== "arabic";
+  const isReadingMode = readingView !== "both";
   const activeWordRange = audio.currentVerse === verse.verseKey
     ? getActiveAudioWordRange(audio.audioSegments, audio.currentTime)
     : null;
@@ -60,17 +64,15 @@ export function VerseCard({
 
   return (
     <article className="verse-card" id={`ayah-${verse.verseKey.replace(":", "-")}`}>
-      <div className="verse-topline">
+      {!isReadingMode ? <div className="verse-topline">
         <span className="verse-key">{verse.verseKey}</span>
         <div className="verse-actions" aria-label={`Actions for ayah ${verse.verseKey}`}>
           <button type="button" className="icon-button" onClick={() => void audio.playVerse(verse.verseKey, audio.reciterId ?? defaultReciterId)} aria-label={`Play ayah ${verse.verseKey}`}>
             <Play size={16} fill="currentColor" aria-hidden="true" />
           </button>
-          {!readingMode ? (
-            <button type="button" className="icon-button" onClick={() => setTafsirOpen(true)} aria-label={`Open tafsir for ayah ${verse.verseKey}`}>
-              <MessageCircle size={16} aria-hidden="true" />
-            </button>
-          ) : null}
+          <button type="button" className="icon-button" onClick={() => setTafsirOpen(true)} aria-label={`Open tafsir for ayah ${verse.verseKey}`}>
+            <MessageCircle size={16} aria-hidden="true" />
+          </button>
           <button type="button" className="icon-button" onClick={() => void copyVerse()} aria-label={`Copy ayah ${verse.verseKey}`}>
             {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
           </button>
@@ -78,14 +80,14 @@ export function VerseCard({
             <LinkIcon size={16} aria-hidden="true" />
           </button>
         </div>
-      </div>
-      <p className="arabic-text" lang="ar" dir="rtl" translate="no">
+      </div> : null}
+      {showArabic ? <p className="arabic-text" lang="ar" dir="rtl" translate="no">
         {arabicWords.map((word, index) => {
           const isActive = Boolean(activeWordRange && index >= activeWordRange.from && index < activeWordRange.to);
           return <span className={`arabic-word${isActive ? " is-reciting" : ""}`} data-word-index={index} key={`${verse.verseKey}-${index}`}>{index ? " " : null}{word}</span>;
         })}
-      </p>
-      {!readingMode && verse.translations.length ? (
+      </p> : null}
+      {showTranslations && verse.translations.length ? (
         <div className="translations-list">
           {verse.translations.map((translation) => {
             const isUrdu = translation.languageName?.toLowerCase() === "urdu";
@@ -101,9 +103,9 @@ export function VerseCard({
             );
           })}
         </div>
-      ) : !readingMode ? <p className="empty-copy">Translation is unavailable for this ayah.</p> : null}
-      {copied ? <span className="toast" role="status">Ayah copied</span> : null}
-      {!readingMode && tafsirOpen ? <TafsirPanel verseKey={verse.verseKey} resources={tafsirs} defaultResourceId={defaultTafsirId} onClose={() => setTafsirOpen(false)} /> : null}
+      ) : showTranslations ? <p className="empty-copy">Translation is unavailable for this ayah.</p> : null}
+      {copied && !isReadingMode ? <span className="toast" role="status">Ayah copied</span> : null}
+      {!isReadingMode && tafsirOpen ? <TafsirPanel verseKey={verse.verseKey} resources={tafsirs} defaultResourceId={defaultTafsirId} onClose={() => setTafsirOpen(false)} /> : null}
     </article>
   );
 }
