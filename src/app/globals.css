@@ -471,7 +471,7 @@ html[data-theme="dark"] .empty-state { border-color: #42564e; background: rgba(3
 html[data-theme="dark"] .setup-card { border-color: #385247; background: linear-gradient(145deg, rgba(31,61,51,.76), rgba(24,33,30,.96)); }
 html[data-theme="dark"] .legal-content p, html[data-theme="dark"] .translation-text, html[data-theme="dark"] .reading-translation-text, html[data-theme="dark"] .tafsir-content { color: #b8c7c0; }
 html[data-theme="dark"] .arabic-text { color: #edf5f1; }
-html[data-theme="dark"] .arabic-word.is-reciting { color: #4be0c5; text-shadow: 0 0 14px rgba(75,224,197,.32); }
+html[data-theme="dark"] .arabic-word.is-reciting { color: #18b89f; text-shadow: 0 0 8px rgba(24,184,159,.22); }
 html[data-theme="dark"] .audio-dock { border-color: #3b5148; background: rgba(24,33,30,.96); box-shadow: 0 18px 55px rgba(0,0,0,.48), 0 2px 8px rgba(0,0,0,.28); }
 html[data-theme="dark"] .audio-reciter select { background: #202b27; }
 html[data-theme="dark"] .audio-autoplay-switch { border-color: #4b6259; background: #2b3934; }
