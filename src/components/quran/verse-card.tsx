@@ -15,11 +15,13 @@ export function VerseCard({
   tafsirs,
   defaultTafsirId,
   defaultReciterId,
+  readingMode = false,
 }: {
   verse: VerseViewModel;
   tafsirs: ResourceOption[];
   defaultTafsirId?: number;
   defaultReciterId?: number;
+  readingMode?: boolean;
 }) {
   const audio = useAudioPlayer();
   const [tafsirOpen, setTafsirOpen] = useState(false);
@@ -64,9 +66,11 @@ export function VerseCard({
           <button type="button" className="icon-button" onClick={() => void audio.playVerse(verse.verseKey, audio.reciterId ?? defaultReciterId)} aria-label={`Play ayah ${verse.verseKey}`}>
             <Play size={16} fill="currentColor" aria-hidden="true" />
           </button>
-          <button type="button" className="icon-button" onClick={() => setTafsirOpen(true)} aria-label={`Open tafsir for ayah ${verse.verseKey}`}>
-            <MessageCircle size={16} aria-hidden="true" />
-          </button>
+          {!readingMode ? (
+            <button type="button" className="icon-button" onClick={() => setTafsirOpen(true)} aria-label={`Open tafsir for ayah ${verse.verseKey}`}>
+              <MessageCircle size={16} aria-hidden="true" />
+            </button>
+          ) : null}
           <button type="button" className="icon-button" onClick={() => void copyVerse()} aria-label={`Copy ayah ${verse.verseKey}`}>
             {copied ? <Check size={16} aria-hidden="true" /> : <Copy size={16} aria-hidden="true" />}
           </button>
@@ -81,7 +85,7 @@ export function VerseCard({
           return <span className={`arabic-word${isActive ? " is-reciting" : ""}`} data-word-index={index} key={`${verse.verseKey}-${index}`}>{index ? " " : null}{word}</span>;
         })}
       </p>
-      {verse.translations.length ? (
+      {!readingMode && verse.translations.length ? (
         <div className="translations-list">
           {verse.translations.map((translation) => {
             const isUrdu = translation.languageName?.toLowerCase() === "urdu";
@@ -97,9 +101,9 @@ export function VerseCard({
             );
           })}
         </div>
-      ) : <p className="empty-copy">Translation is unavailable for this ayah.</p>}
+      ) : !readingMode ? <p className="empty-copy">Translation is unavailable for this ayah.</p> : null}
       {copied ? <span className="toast" role="status">Ayah copied</span> : null}
-      {tafsirOpen ? <TafsirPanel verseKey={verse.verseKey} resources={tafsirs} defaultResourceId={defaultTafsirId} onClose={() => setTafsirOpen(false)} /> : null}
+      {!readingMode && tafsirOpen ? <TafsirPanel verseKey={verse.verseKey} resources={tafsirs} defaultResourceId={defaultTafsirId} onClose={() => setTafsirOpen(false)} /> : null}
     </article>
   );
 }

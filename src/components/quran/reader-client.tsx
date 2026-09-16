@@ -17,6 +17,7 @@ export function ReaderClient({
   reciters,
   defaultTafsirId,
   defaultReciterId,
+  readingMode = false,
 }: {
   chapterId: number;
   totalVerses: number;
@@ -27,6 +28,7 @@ export function ReaderClient({
   reciters: ResourceOption[];
   defaultTafsirId?: number;
   defaultReciterId?: number;
+  readingMode?: boolean;
 }) {
   const [loadedVerses, setLoadedVerses] = useState(verses);
   const [isLoading, setIsLoading] = useState(false);
@@ -99,7 +101,7 @@ export function ReaderClient({
     <>
       <div className="verse-list">
         {loadedVerses.map((verse) => (
-          <VerseCard key={verse.id} verse={verse} tafsirs={tafsirs} defaultTafsirId={defaultTafsirId} defaultReciterId={defaultReciterId} />
+          <VerseCard key={verse.id} verse={verse} tafsirs={tafsirs} defaultTafsirId={defaultTafsirId} defaultReciterId={defaultReciterId} readingMode={readingMode} />
         ))}
         {hasMore || isLoading || hasError ? (
           <div ref={sentinelRef} className="verse-list-loader" aria-live="polite">

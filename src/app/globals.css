@@ -23,6 +23,10 @@ button { cursor: pointer; }
 .brand-name { font-size: 15px; font-weight: 700; letter-spacing: -.01em; }
 .brand-caption { color: var(--muted); font-size: 10px; margin-top: 2px; letter-spacing: .04em; text-transform: uppercase; }
 .header-tools { display: flex; gap: 10px; align-items: center; }
+.reader-mode-toggle { display: inline-flex; align-items: center; gap: 2px; padding: 3px; border: 1px solid #dfe5df; border-radius: 999px; background: #eef2ed; }
+.reader-mode-toggle button { display: inline-flex; align-items: center; gap: 6px; min-height: 30px; border: 0; border-radius: 999px; color: var(--muted); background: transparent; padding: 0 10px; font-size: 11px; font-weight: 700; transition: .18s ease; }
+.reader-mode-toggle button:hover { color: var(--ink); }
+.reader-mode-toggle button.is-active { color: var(--ink); background: white; box-shadow: 0 2px 7px rgba(31, 69, 57, .1); }
 .button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid transparent; border-radius: 10px; min-height: 42px; padding: 0 15px; font-size: 13px; font-weight: 700; transition: .2s ease; }
 .button-primary { color: white; background: var(--accent); box-shadow: 0 8px 20px rgba(31, 101, 85, .18); }
 .button-primary:hover { background: var(--accent-dark); transform: translateY(-1px); }
@@ -163,12 +167,15 @@ html[data-surah-names-font-ready="true"] .chapter-icon::before { visibility: vis
 .bismillah-divider { display: grid; place-items: center; height: 56px; }
 .bismillah-divider span { width: 72px; height: 1px; background: #b8cdbf; }
 .verse-list { width: 100%; margin-top: 35px; }
+.reading-mode .verse-list { margin-top: 28px; }
 .verse-card { position: relative; padding: 23px 0 33px; border-bottom: 1px solid var(--line); scroll-margin-top: 110px; }
+.reading-mode .verse-card { padding-block: 25px 31px; }
 .verse-list-loader { display: grid; place-items: center; min-height: 84px; color: var(--muted); font-size: 12px; }
 .verse-topline { display: flex; justify-content: space-between; align-items: center; min-height: 34px; }
 .verse-key { color: var(--accent); font-size: 11px; font-weight: 800; letter-spacing: .08em; }
 .verse-actions { display: flex; gap: 2px; }
 .arabic-text { color: #1f302c; font-family: IndoPak !important; font-size: clamp(30px, 4vw, 43px); line-height: 2; text-align: right; margin: 21px 0 20px; }
+.reading-mode .arabic-text { font-size: clamp(34px, 5vw, 56px); line-height: 1.95; margin-block: 24px 6px; }
 .arabic-word { border-radius: .28em; box-decoration-break: clone; -webkit-box-decoration-break: clone; transition: color .16s ease, background-color .16s ease, box-shadow .16s ease; }
 .arabic-word.is-reciting { color: #118c83; background: transparent; box-shadow: none; }
 .translations-list { display: grid; width: 100%; gap: 18px; }

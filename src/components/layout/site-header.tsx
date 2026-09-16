@@ -4,14 +4,16 @@ import { BookOpenText } from "lucide-react";
 import type { ResourceOption } from "@/lib/quran/types";
 
 import { JumpForm } from "../navigation/jump-form";
+import { ReaderModeToggle } from "../navigation/reader-mode-toggle";
 import { SettingsDialog } from "../settings/settings-dialog";
 
 type SiteHeaderProps = {
   translations?: ResourceOption[];
   selectedTranslationIds?: number[];
+  showReaderMode?: boolean;
 };
 
-export function SiteHeader({ translations = [], selectedTranslationIds }: SiteHeaderProps) {
+export function SiteHeader({ translations = [], selectedTranslationIds, showReaderMode = false }: SiteHeaderProps) {
   return (
     <header className="site-header">
       <div className="shell header-inner">
@@ -23,6 +25,7 @@ export function SiteHeader({ translations = [], selectedTranslationIds }: SiteHe
           </span>
         </Link>
         <div className="header-tools">
+          {showReaderMode ? <ReaderModeToggle /> : null}
           <JumpForm compact />
           {translations.length > 0 ? (
             <SettingsDialog

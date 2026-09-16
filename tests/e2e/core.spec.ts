@@ -28,3 +28,14 @@ test("encoded ayah URLs reach the reader route", async ({ page }) => {
     await expect(liveState).toBeVisible();
   }
 });
+
+test("Reading mode keeps Arabic and hides translations", async ({ page }) => {
+  await page.goto("/surah/1?mode=reading");
+  const setupState = page.getByText("Connect Quran.Foundation to begin");
+  if (await setupState.isVisible().catch(() => false)) return;
+
+  await expect(page.getByRole("button", { name: "Reading", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.locator(".arabic-text").first()).toBeVisible();
+  await expect(page.locator(".translations-list")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: /Open tafsir/ })).toHaveCount(0);
+});

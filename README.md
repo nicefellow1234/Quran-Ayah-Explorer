@@ -13,6 +13,7 @@ Repository: <https://github.com/nicefellow1234/Quran-Ayah-Explorer>
 - Searchable Surah and ayah picker with keyboard support, Surah icon previews, +/- controls, and a range slider.
 - Stable deep links for individual ayahs, for example `/ayah/2:255`.
 - Full Surah reader at `/surah/[chapterId]` with lazy loading as the reader approaches the end of the loaded content.
+- Reader mode toggle with a focused Arabic-only layout; Reading mode hides translations and tafsir controls while preserving recitation playback and word highlighting.
 - Arabic Quran text rendered with the IndoPak font and right-to-left layout.
 - English and Urdu translations, including Urdu RTL layout and Mehr Nastaliq typography.
 - Multiple translations can be added at the same time, with English and Urdu selected by default.

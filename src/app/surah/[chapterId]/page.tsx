@@ -13,7 +13,7 @@ import { getDefaultReciterId, getDefaultTafsirId, getDefaultTranslationIds, getR
 import { getChapterVerses } from "@/lib/quran/verses";
 import { parseChapterId, parseOptionalResourceIds } from "@/lib/quran/validation";
 
-type PageProps = { params: Promise<{ chapterId: string }>; searchParams: Promise<{ translation?: string | string[] }> };
+type PageProps = { params: Promise<{ chapterId: string }>; searchParams: Promise<{ translation?: string | string[]; mode?: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { chapterId } = await params;
@@ -38,17 +38,20 @@ export default async function SurahPage({ params, searchParams }: PageProps) {
     if (error instanceof QuranApiError && error.status === 404) notFound();
     throw error;
   }
-  const requestedTranslationIds = parseOptionalResourceIds((await searchParams).translation)
+  const requestedParams = await searchParams;
+  const readingMode = requestedParams.mode === "reading";
+  const requestedTranslationIds = parseOptionalResourceIds(requestedParams.translation)
     .filter((translationId) => resources.translations.some((item) => item.id === translationId));
   const translationIds = requestedTranslationIds.length ? requestedTranslationIds : getDefaultTranslationIds(resources);
-  const verses = await getChapterVerses(id, translationIds);
+  const contentTranslationIds = readingMode ? [] : translationIds;
+  const verses = await getChapterVerses(id, contentTranslationIds);
   const previousChapter = id > 1 ? id - 1 : null;
   const nextChapter = id < 114 ? id + 1 : null;
 
   return (
     <>
-      <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} />
-      <main className="shell reader-page">
+      <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} showReaderMode />
+      <main className={`shell reader-page${readingMode ? " reading-mode" : ""}`}>
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">All Surahs</Link><span>/</span><span>Surah {chapter.id}</span></nav>
         <header className="reader-header">
           <div><p className="eyebrow">Surah {String(chapter.id).padStart(3, "0")} · {chapter.revelationPlace}</p><h1>{chapter.transliteratedName || chapter.nameSimple}</h1><p className="reader-subtitle">{chapter.translatedName} · {chapter.versesCount} ayahs</p></div>
@@ -61,7 +64,7 @@ export default async function SurahPage({ params, searchParams }: PageProps) {
           />
         </header>
         {chapter.bismillahPre ? <div className="bismillah-divider" aria-label="Opening of the Surah"><span /></div> : null}
-        <ReaderClient key={`surah-${id}-${translationIds.join(",")}`} chapterId={id} totalVerses={chapter.versesCount} translationIds={translationIds} queueVerseKeys={Array.from({ length: chapter.versesCount }, (_, index) => `${id}:${index + 1}`)} verses={verses} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} />
+        <ReaderClient key={`surah-${id}-${contentTranslationIds.join(",")}-${readingMode ? "reading" : "verse"}`} chapterId={id} totalVerses={chapter.versesCount} translationIds={contentTranslationIds} queueVerseKeys={Array.from({ length: chapter.versesCount }, (_, index) => `${id}:${index + 1}`)} verses={verses} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} readingMode={readingMode} />
         <nav className="reader-navigation" aria-label="Surah navigation">
           {previousChapter ? <Link href={`/surah/${previousChapter}`} className="button button-quiet"><ArrowLeft size={16} aria-hidden="true" /> Previous Surah</Link> : <span />}
           {nextChapter ? <Link href={`/surah/${nextChapter}`} className="button button-quiet">Next Surah <ArrowRight size={16} aria-hidden="true" /></Link> : <span />}

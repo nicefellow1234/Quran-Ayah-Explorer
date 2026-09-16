@@ -14,7 +14,7 @@ import { getAdjacentVerseKeys } from "@/lib/quran/navigation";
 import { getVerse } from "@/lib/quran/verses";
 import { parseOptionalResourceIds, parseVerseKey } from "@/lib/quran/validation";
 
-type PageProps = { params: Promise<{ verseKey: string }>; searchParams: Promise<{ translation?: string | string[] }> };
+type PageProps = { params: Promise<{ verseKey: string }>; searchParams: Promise<{ translation?: string | string[]; mode?: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { verseKey } = await params;
@@ -35,12 +35,15 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
     if (error instanceof QuranApiError && error.status === 404) notFound();
     throw error;
   }
-  const requestedTranslationIds = parseOptionalResourceIds((await searchParams).translation)
+  const requestedParams = await searchParams;
+  const readingMode = requestedParams.mode === "reading";
+  const requestedTranslationIds = parseOptionalResourceIds(requestedParams.translation)
     .filter((id) => resources.translations.some((item) => item.id === id));
   const translationIds = requestedTranslationIds.length ? requestedTranslationIds : getDefaultTranslationIds(resources);
+  const contentTranslationIds = readingMode ? [] : translationIds;
   let verse;
   try {
-    verse = await getVerse(`${parsed.chapter}:${parsed.verse}`, translationIds);
+    verse = await getVerse(`${parsed.chapter}:${parsed.verse}`, contentTranslationIds);
   } catch (error) {
     if (error instanceof QuranApiError && error.status === 404) notFound();
     throw error;
@@ -49,8 +52,8 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
 
   return (
     <>
-      <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} />
-      <main className="shell reader-page ayah-page">
+      <SiteHeader translations={resources.translations} selectedTranslationIds={translationIds} showReaderMode />
+      <main className={`shell reader-page ayah-page${readingMode ? " reading-mode" : ""}`}>
         <nav className="breadcrumbs" aria-label="Breadcrumb"><Link href="/">All Surahs</Link><span>/</span><Link href={`/surah/${parsed.chapter}`}>Surah {parsed.chapter}</Link><span>/</span><span>Ayah {parsed.verse}</span></nav>
         <header className="ayah-header reader-header">
           <div><p className="eyebrow">Surah {String(chapter.id).padStart(3, "0")} · {chapter.revelationPlace}</p><h1>{chapter.transliteratedName || chapter.nameSimple}</h1><p className="reader-subtitle">{chapter.translatedName} · {chapter.versesCount} ayahs</p></div>
@@ -62,7 +65,7 @@ export default async function AyahPage({ params, searchParams }: PageProps) {
             translate="no"
           />
         </header>
-        <ReaderClient key={`ayah-${verse.verseKey}-${translationIds.join(",")}`} chapterId={parsed.chapter} totalVerses={1} translationIds={translationIds} queueVerseKeys={[verse.verseKey]} verses={[verse]} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} />
+        <ReaderClient key={`ayah-${verse.verseKey}-${contentTranslationIds.join(",")}-${readingMode ? "reading" : "verse"}`} chapterId={parsed.chapter} totalVerses={1} translationIds={contentTranslationIds} queueVerseKeys={[verse.verseKey]} verses={[verse]} tafsirs={resources.tafsirs} reciters={resources.reciters} defaultTafsirId={getDefaultTafsirId(resources)} defaultReciterId={getDefaultReciterId(resources)} readingMode={readingMode} />
         <nav className="reader-navigation ayah-navigation" aria-label="Ayah navigation">
           {previousKey ? <Link href={`/ayah/${previousKey}`} className="button button-quiet"><ArrowLeft size={16} aria-hidden="true" /> Previous ayah</Link> : <span />}
           <Link href={`/surah/${parsed.chapter}`} className="button button-quiet">Complete Surah</Link>
